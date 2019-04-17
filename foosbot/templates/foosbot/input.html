@@ -1,13 +1,317 @@
-<!doctype html>
-<title>Hello from Flask</title>
-{% if name %}
-  <h1>Hello {{ name }}!!</h1>
-{% else %}
-  <h1>Hello, World!</h1>
-{% endif %}
-<br>
-{% if num %}
-	<b>Number is {{ num }}</b>
-{% else %}
-	<b>No Num</b>
-{% endif %}
+<!DOCTYPE html>
+<html lang="en">
+
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+<style>
+  body {
+    padding-top: 70px;
+  }
+
+  @media (max-width: 979px) {
+    body {
+      padding-top: 0px;
+    }
+  }
+
+  .navbar-inverse {
+    background-color: #487075;
+    border-color: white;
+  }
+
+  .navbar-inverse .navbar-nav>li>a {
+    color: #ffffff;
+  }
+</style>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+</head>
+
+<body>
+
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Input</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class='container' style='margin-top:10%'>
+
+    <div id="app">
+      [[ timeout ]]
+      <hr>
+      <div v-for="(value, key) in match_data">
+        [[ key ]] : [[ value ]]
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
+
+
+
+
+
+<script>
+  data = {
+    session_wakeup: 3600,
+    timeout: -1,
+    match_data: {
+      player1: 'test',
+      player2: 'test2',
+      player3: 'test3',
+    }
+  }
+
+  // The object is added to a Vue instance
+  var vm = new
+    Vue({
+      el: '#app',
+      delimiters: ['[[', ']]'],
+      data: data
+    })
+
+
+
+  $(document).ready(function () {
+    timer()
+
+    function timer() {
+      if (data.timeout == 0) { timeout(); data.timeout = -1; }
+      if (data.timeout > 0) { data.timeout = data.timeout - 1 }
+
+      if (data.session_wakeup < 1) {
+        wakeup()
+      }
+      data.session_wakeup -= 1
+      setTimeout(timer, 1000)
+    }
+
+    function wakeup() {
+      data.session_wakeup = 3600
+      // $.post("/foosball_input", {'action':'meow'}, function () {return(false);});
+    }
+
+    function processResponse(data) {
+      if (data == 'TEAM MODE') {
+        //Enter team mode
+        clearPlayers()
+        clearMatch();
+        $('#mode').html('TEAM MODE')
+        playAudio('Team Mode!')
+        return;
+      } else if (data == 'Could not find player') {
+        if ($('#mode').html() == 'TEAM MODE') {
+          playAudio('Team not found!')
+        } else {
+          playAudio('Player not found!')
+        }
+        return;
+      }
+
+      data = JSON.parse(data)
+      var date = new Date()
+      var player = data['username'];
+      if (player == '') { $('#message').html('Player not found'); return (false); }
+
+      //is player1 empty?
+      if (data.match_data.player1 == '') {
+        //update player 1, set updated_at
+        $('#player1').html(player)
+        $('#player1-games').html(data['games'])
+        $('#player1-rank').html(data['ranking'])
+        $('#status').html('waiting for player 2')
+        $('#message').html('Player 1 set');
+        $('#updated_at').html(date)
+        if (data.timeout < 15) { $('#timeout').html(15) }
+        return true
+      }
+      //is player1 == player? voice an error 
+      if (data.match_data.player1 == player && data.match_data.player2 == '') {
+        $('#message').html('Need new Player');
+        return false;
+      }
+
+      //player1 full, player2 empty?
+      if (data.match_data.player2 == '') {
+        // create match, set player2, set updated at, play audio, set status = in_progress, update slack
+        var postval = {}
+        postval.action = 'start';
+        postval.player1 = data.match_data.player1;
+        postval.player2 = player;
+        $.post("/foosball_input", postval, function () {
+          $('#player2').html(player)
+          $('#player2-games').html(data['games'])
+          $('#player2-rank').html(data['ranking'])
+          $('#status').html('in_progress')
+          $('#message').html('Match started');
+          $('#updated_at').html(date)//.toISOString().substring(0, 10) + '  ' + date.toISOString().substring(11, 19))
+
+          var serving;
+          if ($('#player1-rank').html() > data['ranking']) {
+            serving = player;
+          } else {
+            serving = $('#player1').html();
+          }
+
+          playAudio('' + data.match_data.player1 + ' versus ' + data.match_data.player2 + ', ' + serving + ' serves.')
+          updateSlack('Match Started! ' + data.match_data.player1 + ' versus ' + player + '.')
+          if (data.timeout < 1000) { $('#timeout').html(1000) }
+          //to do: slack message
+          return true;
+        });
+        return false;
+      }
+
+      //player1 full, player 2 full. Check new player is one of these 2, more than 15 seconds has elapsed
+      if (player != data.match_data.player1 && player != data.match_data.player2) {
+        clearPlayers();
+        $('#message').html('Player not playing. Match reset')
+        clearMatch();
+        playAudio('Player not in current match. Match Cleared.')
+        updateSlack('Match Cleared.')
+        return (false);
+      }
+      if ((date - new Date($('#updated_at').text())) < 10000) {
+        $('#message').html('Game must last 15 seconds');
+        playAudio('Match too brief')
+        if (data.timeout < 1000) { $('#timeout').html(1000) }
+        return (false);
+      }
+
+      //update game with winner, reset player1/player2, set updated_at, set status waiting for input, update slack
+      var postval = {}
+      postval.action = 'end';
+      postval.mode = $('#mode').html()
+      postval.player1 = data.match_data.player1;
+      postval.player2 = data.match_data.player2;
+      postval.winner = player;
+      loser = (player == postval.player1) ? postval.player2 : postval.player1;
+      $.post("/foosball_input", postval, function (response) {
+        response = JSON.parse(response)
+        var epicFollowup = ''
+        var slackMessage = player + ' was Victorious!'
+        clearPlayers();
+        $('#message').html('Match complete')
+        $('#updated_at').html(date)
+        if (response['streak'] > 2) { epicFollowup = 'rampage'; slackMessage = player + ' is on a Rampage!'; }
+        if (response['streak'] > 3) { epicFollowup = 'dominating'; slackMessage = player + ' is Dominating!' }
+        if (response['streak'] > 4) { epicFollowup = 'unstoppable'; slackMessage = player + ' is Unstoppable!' }
+        if (response['streak'] > 1) { slackMessage += " That's " + response['streak'] + " wins in a row!" }
+        slackMessage += ' (' + (parseInt(data['wins']) + 1) + ' out of ' + (parseInt(data['games']) + 1) + ' today)'
+        playAudio('' + player + ' Wins!', epicFollowup)
+        updateSlack(slackMessage)
+        return true;
+      });
+    }
+
+    function clearMatch() {
+      postval = {}
+      postval.action = 'remove';
+      $.post("/foosball_input", postval, function () {
+        return true;
+      });
+    }
+
+    function playAudio(data, followup = '') {
+      data = data.toLowerCase().replace('sewon', 'siwon')
+      var postval = {}
+      postval.action = 'say';
+      postval.say = data;
+      $.post("/foosball_input", postval, function () {
+        var audio = new Audio('audio.mp3?v=' + Math.random());
+        $(audio).on("ended", function () {
+          if (followup != '') {
+            var audio2 = new Audio('audio/' + followup + '.wav')
+            audio2.play();
+            return true
+          }
+          return false
+        });
+        audio.play();
+        return true;
+      });
+      return false;
+    }
+
+    function clearPlayers() {
+      $('#player1').html('')
+      $('#player2').html('')
+      $('#player1-games').html('')
+      $('#player2-games').html('')
+      $('#player1-rank').html('')
+      $('#player2-rank').html('')
+      $('#status').html('idle')
+      $('#timeout').html('-1')
+      $('#mode').html('SINGLES MODE')
+    }
+
+    function updateSlack(data) {
+      var postval = {}
+      postval.action = 'slack';
+      postval.message = data;
+      $.post("/foosball_input", postval, function () {
+        return true;
+      });
+      return false;
+    }
+
+    function timeout() {
+      console.log('timeout')
+      //If nothing has happened, ignore timeout
+      if (data.match_data.player1 == '' && data.match_data.player2 == '') { return false }
+
+      //If only player1 is entered, reset
+      if (data.match_data.player2 == '') {
+        clearPlayers();
+        $('#message').html('Timeout')
+        playAudio('Timeout waiting for player 2.')
+        return false
+      }
+
+      //If player1 and player 2 entered, reset and clear game from server
+      clearPlayers();
+      $('#message').html('Timeout')
+      playAudio('Time limit reached. Match cleared.')
+      postval = {}
+      postval.action = 'remove';
+      $.post("/foosball_input", postval, function () {
+        return true;
+      });
+      return false
+
+    }
+
+    $('#input').focus();
+
+    $('form').submit(function (e) {
+      e.preventDefault()
+      input = $('#input').val()
+      postval = {}
+      postval.action = 'rfid'
+      postval.mode = $('#mode').html()
+      postval.rfid = input
+      $.post("/foosball_input", postval, function (response) {
+        processResponse(response);
+        return true;
+      });
+      $('#input').val('');
+
+      if (data.timeout < 6) { $('#timeout').html(6) }
+      return false;
+
+
+    });
+  });
+</script>
