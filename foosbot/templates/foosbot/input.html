@@ -30,6 +30,8 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+
 
 </head>
 
@@ -46,6 +48,8 @@
 
   <div class='container' style='padding-top:70px'>
     <form>
+      {% csrf_token %}
+      {{form}}
       <input type='text' id='input' autofocus>
     </form>
 <hr>
@@ -69,17 +73,24 @@
 
 
 <script>
+Cookies.set('name', 'value', { expires: 9999 });
+console.log(Cookies.get('name'))
+
+handler_url = '/100/handler'
+
   data = {
     session_wakeup: 60,
     message: '',
     match_data: {
       status: 'idle',
       timeout: -1,
-      player1: 'test',
-      player2: 'test2',
+      player1: '',
+      player2: '',
       player1_rank: 'test2',
       player2_rank: 'test2',
-      updated_at
+      player1_games: 0,
+      player2_games: 0,
+      updated_at: '',
     }
   }
 
@@ -109,45 +120,39 @@
 
     function wakeup() {
       data.session_wakeup = 60
-      $.post("/foosball_input", {'action':'ping'}, function () {return(false);});
+      $.post(handler_url, {'action':'ping'}, function () {return(false);});
     }
 
     function processResponse(response) {
-      if (response == 'TEAM MODE') {
-        //Enter team mode
-        clearPlayers()
-        clearMatch();
-        data.match_data.mode = 'TEAM MODE'
-        playAudio('Team Mode!')
-        return;
-      } else if (response == 'Could not find player') {
-        if (data.match_data.mode == 'TEAM MODE') {
-          playAudio('Team not found!')
-        } else {
-          playAudio('Player not found!')
-        }
+      response = JSON.parse(response)
+
+      if (response.status=='not found') {
+        data.message = 'Player not found!'
+        playAudio('Player not found!')
         return;
       }
-
-      response = JSON.parse(response)
+      
       var date = new Date()
-      var player = response['username'];
-      if (player == '') { data.message = 'Player not found'; return (false); }
+      var player = response['result'];
+      console.log(player)
+      if (player['id'] == '') { data.message = 'Player not found'; return (false); }
 
       //is player1 empty?
       if (data.match_data.player1 == '') {
         //update player 1, set updated_at
-        data.match_data.player1 = player
-        data.match_data.player1_games = response['games']
-        data.match_data.player1_rank = response['ranking']
+        if (data.match_data.timeout < 6) { data.match_data.timeout = 6 }
+        data.match_data.player1 = player['id']
+        data.match_data.player1_games = player['games_today']
+        data.match_data.player1_rank = player['points']
+        data.match_data.player1_name = player['name']
         data.match_data.status = 'waiting for player 2'
-        data.match_data.message = 'Player 1 set'
+        data.message = 'Player 1 set'
         data.match_data.updated_at = date
         if (data.match_data.timeout < 15) { data.match_data.timeout = 15 }
         return true
       }
       //is player1 == player? voice an error 
-      if (data.match_data.player1 == player && data.match_data.player2 == '') {
+      if (data.match_data.player1 == player['id'] && data.match_data.player2 == '') {
         data.message = 'Need new Player';
         return false;
       }
@@ -158,24 +163,25 @@
         var postval = {}
         postval.action = 'start';
         postval.player1 = data.match_data.player1;
-        postval.player2 = player;
-        $.post("/foosball_input", postval, function () {
-          data.match_data.player2 = player
-          data.match_data.player2_games = response['games']
-          data.match_data.player2_rank = response['ranking']
+        postval.player2 = player['id'];
+        $.post(handler_url, postval, function () {
+          data.match_data.player2 = player['id']
+          data.match_data.player2_games = player['games_today']
+          data.match_data.player2_rank = player['points']
+          data.match_data.player2_name = player['name']
           data.match_data.status = 'in_progress'
           data.message = 'Match started';
           data.match_data.updated_at = date //.toISOString().substring(0, 10) + '  ' + date.toISOString().substring(11, 19)
 
           var serving;
-          if (data.match_data.player1_rank > response['ranking']) {
-            serving = player;
+          if (data.match_data.player1_rank > player['points']) {
+            serving = player['name'];
           } else {
-            serving = data.match_data.player1;
+            serving = data.match_data.player1_name;
           }
 
-          playAudio('' + data.match_data.player1 + ' versus ' + data.match_data.player2 + ', ' + serving + ' serves.')
-          updateSlack('Match Started! ' + data.match_data.player1 + ' versus ' + player + '.')
+          playAudio('' + data.match_data.player1_name + ' versus ' + data.match_data.player2_name + ', ' + serving + ' serves.')
+          updateSlack('Match Started! ' + data.match_data.player1_name + ' versus ' + data.match_data.player2_name + '.')
           if (data.match_data.timeout < 1000) { data.match_data.timeout = 1000 }
           
           return true;
@@ -184,7 +190,7 @@
       }
 
       //player1 full, player 2 full. Check new player is one of these 2, more than 15 seconds has elapsed
-      if (player != data.match_data.player1 && player != data.match_data.player2) {
+      if (player['id'] != data.match_data.player1 && player['id'] != data.match_data.player2) {
         clearPlayers();
         data.message = 'Player not playing. Match reset'
         clearMatch();
@@ -205,21 +211,25 @@
       postval.mode = data.match_data.mode
       postval.player1 = data.match_data.player1;
       postval.player2 = data.match_data.player2;
-      postval.winner = player;
-      loser = (player == postval.player1) ? postval.player2 : postval.player1;
-      $.post("/foosball_input", postval, function (response) {
+      postval.winner = player['id'];
+      loser = (player['id'] == postval.player1) ? postval.player2 : postval.player1;
+      $.post(handler_url, postval, function (response) {
         response = JSON.parse(response)
+        if (response.status != 'success'){
+          data.message = 'Match completion failed: ' + response.status;
+          return;
+        }
         var epicFollowup = ''
-        var slackMessage = player + ' was Victorious!'
+        var slackMessage = player['name'] + ' was Victorious!'
         clearPlayers();
         data.message = 'Match complete'
         data.match_data.updated_at = date
-        if (response['streak'] > 2) { epicFollowup = 'rampage'; slackMessage = player + ' is on a Rampage!'; }
-        if (response['streak'] > 3) { epicFollowup = 'dominating'; slackMessage = player + ' is Dominating!' }
-        if (response['streak'] > 4) { epicFollowup = 'unstoppable'; slackMessage = player + ' is Unstoppable!' }
+        if (response['streak'] > 2) { epicFollowup = 'rampage'; slackMessage = player['name'] + ' is on a Rampage!'; }
+        if (response['streak'] > 3) { epicFollowup = 'dominating'; slackMessage = player['name'] + ' is Dominating!' }
+        if (response['streak'] > 4) { epicFollowup = 'unstoppable'; slackMessage = player['name'] + ' is Unstoppable!' }
         if (response['streak'] > 1) { slackMessage += " That's " + response['streak'] + " wins in a row!" }
-        slackMessage += ' (' + (parseInt(response['wins']) + 1) + ' out of ' + (parseInt(response['games']) + 1) + ' today)'
-        playAudio('' + player + ' Wins!', epicFollowup)
+        slackMessage += ' (' + (parseInt(response['wins_today']) + 1) + ' out of ' + (parseInt(response['games_today']) + 1) + ' today)'
+        playAudio('' + player['name'] + ' Wins!', epicFollowup)
         updateSlack(slackMessage)
         return true;
       });
@@ -228,7 +238,7 @@
     function clearMatch() {
       postval = {}
       postval.action = 'remove';
-      $.post("/foosball_input", postval, function () {
+      $.post(handler_url, postval, function () {
         return true;
       });
     }
@@ -238,7 +248,7 @@
       var postval = {}
       postval.action = 'say';
       postval.say = data;
-      $.post("/foosball_input", postval, function () {
+      $.post(handler_url, postval, function () {
         var audio = new Audio('audio.mp3?v=' + Math.random());
         $(audio).on("ended", function () {
           if (followup != '') {
@@ -261,6 +271,8 @@
       data.match_data.player2_games = 0
       data.match_data.player1_rank = 0
       data.match_data.player2_rank = 0
+      data.match_data.player1_name = ''
+      data.match_data.player2_name = ''
       data.match_data.status = 'idle'
       data.match_data.timeout = -1
       data.match_data.mode = 'SINGLES MODE'
@@ -270,7 +282,7 @@
       var postval = {}
       postval.action = 'slack';
       postval.message = data;
-      $.post("/foosball_input", postval, function () {
+      $.post(handler_url, postval, function () {
         return true;
       });
       return false;
@@ -295,7 +307,7 @@
       playAudio('Time limit reached. Match cleared.')
       postval = {}
       postval.action = 'remove';
-      $.post("/foosball_input", postval, function () {
+      $.post(handler_url, postval, function () {
         return true;
       });
       return false
@@ -311,13 +323,12 @@
       postval.action = 'rfid'
       postval.mode = data.match_data.mode
       postval.rfid = input
-      $.post("/foosball_input", postval, function (response) {
+      $.post(handler_url, postval, function (response) {
         processResponse(response);
         return true;
       });
       $('#input').val('');
 
-      if (data.match_data.timeout < 6) { data.match_data.timeout = 6 }
       return false;
 
 
