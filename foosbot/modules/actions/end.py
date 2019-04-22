@@ -22,7 +22,7 @@ def end(data):
     games = db.table('matches').where(
         db.query().where('player1', winner['id']).or_where('player2', winner['id'])
     ) \
-    .where('status', 'completed').order_by('created_on', 'desc').get()
+    .where('status', 'complete').order_by('created_on', 'desc').get()
 
     for game in games:
         if game['winner'] != winner['id']: break

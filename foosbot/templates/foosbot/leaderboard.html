@@ -1,0 +1,79 @@
+
+<style>
+    .games {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    #rankings th{
+        text-align: center;
+    }
+    .text-win {
+        font-weight: bold;
+        color: #39e5a6;
+        font-size: 20px;
+    }
+    .text-lose {
+        font-weight: bold;
+        color: #f7425e;
+        font-size: 15px;
+    }
+</style>
+
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+<div id = "leaderboard" class="panel panel-default">
+    <div class="panel-heading"><h1 class="panel-title">EasyMarkit Leaderboard</h1></div>
+    <div id = "ranking-content" class="panel-body">
+
+
+        <table id="rankings" class="table table-condensed text-center">
+            <thead"><tr><th>Rank</th><th>Photo</th><th>Name</th><th>Elo</th><th>Action</th><th></th></tr></thead>
+            <tbody>
+
+
+                @for ($i = 0; $i < count($players); $i++)
+
+                <tr><td class="rank"> {{$i+1}}</td>
+                    <td class="photo"><img src="/storage/portrait/{{$players[$i]->photo}}" height="45" class="pic" /></td>
+                    <td class="name">{{ $players[$i]->username }}</td>
+                    <td class="elo"> {{(int)$players[$i]->ranking }}</td>
+                    <td> 
+                        @if (!in_array(Auth::user()->username,$players_rfid))
+                            @if (Auth::user()->username != $players[$i]->username && (!in_array($players[$i]->username,$players_rfid)))
+                            <a href="#" class="win btn btn-success btn-lg"><i class="white fa fa-thumbs-up"></i> Claim Win</a>
+                            @endif
+                        @elseif (Auth::user()->username == $players[$i]->username)
+                            <a href="#" class="fob btn btn-success btn-lg"><i class="white fa fa-thumbs-down"></i> I Lost My Fob</a>
+                        @endif                        
+                    </td>
+                    <td><a href="#" data-toggle="modal" data-target="#details" class="btn-details btn btn-default btn-sm"><i class="glyphicon glyphicon-plus"></i> Details </a></td></tr>
+                @endfor
+
+            </tbody></table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="details" class="modal fade" role="dialog">
+    <div class="modal-dialog"> <!--style = "width: 850px;"-->
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Player Details</h4>
+            </div>
+            <div id = "details-content" class="modal-body">
+                <p>o.o</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>

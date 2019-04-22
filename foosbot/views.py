@@ -6,6 +6,9 @@ from django.views.decorators.csrf import csrf_exempt
 def input(request, client_id):
     return render(request, 'foosbot/input.html')
 
+def leaderboard(request, client_id):
+    return render(request, 'foosbot/leaderboard.html')
+
 def verify_hash(request, client_id, secret):
     from orator import DatabaseManager
     import foosbot.database as database

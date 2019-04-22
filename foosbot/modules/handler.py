@@ -21,6 +21,12 @@ class Handler():
         if action == 'end':
             import foosbot.modules.actions as actions
             return actions.end(r)
+        if action == 'remove':
+            import foosbot.modules.actions as actions
+            return actions.remove(r)
+        if action == 'say':
+            import foosbot.modules.actions as actions
+            return actions.say(r)
         if action == 'ping':
             return self.ping(request)
 
@@ -42,7 +48,10 @@ class Handler():
             'meta_data':str(client_data)}
             )
 
-        return 'ping OK'
+        # sending the following will force a page reload.
+        # return {'status':'success', 'result':'reload'}
+
+        return {'status':'success'}
 
     def get_client_ip(self,request):
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
