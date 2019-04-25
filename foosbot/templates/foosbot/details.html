@@ -1,0 +1,57 @@
+<h3 style = "text-align: center;"> {{ player.fname }}</h3>
+
+<div class="panel panel-default" style = "text-align: center;">
+    <b>Points: {{ player.points }}</b>
+    <br>Total played: {{ total_played }}
+    <br>Games won: {{ total_won }}
+    <br>Longest streak: {{ longest_streak }}
+    <br>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h1 class="panel-title"> {{ player.fname }}'s Game History</h1>
+    </div>
+    <div id = "game-content" class="panel-body games">
+        <table class = "display table" style="text-align: center;">
+        {% if matches %}
+            {% for row in matches %}
+            <tr class = "
+                {% if row.winner == player.id %} 
+                success
+                {% else %}
+                danger
+                {% endif %}
+            ">
+                <td> {{ row.created_at }}</td>
+                <td> 
+                    {% if row.winner == player.id %} 
+                    <i class="white glyphicon glyphicon-star"></i>
+                    {% endif %}
+                    {{ player.fname }} 
+                </td>
+                <td>vs</td>
+                <td >
+                    {% if row.winner != player.id %}
+                    <i class="white glyphicon glyphicon-star"></i>
+                    {{ row.winner_name }}
+                    {% else %}
+                    {{ row.loser_name }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if row.winner != player.id %}
+                    <i class="glyphicon glyphicon-arrow-down"></i>
+                    {% else %}
+                    <i class = "glyphicon glyphicon-arrow-up">
+                    {% endif %}
+                    {{ row.delta_elo }}
+                </td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <br>No Games to Display
+        {% endif %}
+        </table>
+    </div>
+</div>

@@ -1,17 +1,28 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
+import foosbot.database as database
 
 # Create your views here.
 def input(request, client_id):
     return render(request, 'foosbot/input.html')
 
 def leaderboard(request, client_id):
-    return render(request, 'foosbot/leaderboard.html')
+    db = database.builder('foosbot')
+    players = db.table('users').order_by('points', 'desc').get()
+    return render(request, 'foosbot/leaderboard.html',context={'players':players, 'client_id':client_id})
+
+@csrf_exempt
+def leaderboard_details(request, client_id):
+    from foosbot.modules.leaderboard import get_details
+    r = request.POST
+    player_id = r['player']
+
+    data = get_details(client_id, player_id)
+    
+    return render(request, 'foosbot/details.html',context=data)
 
 def verify_hash(request, client_id, secret):
-    from orator import DatabaseManager
-    import foosbot.database as database
     db = database.builder('foosbot')
     # newd = {'id': client_id, 'name':'McTesterson', 'secret':'test!'}
     # res = db.table('clients').insert(newd)
