@@ -1,10 +1,10 @@
 import foosbot.database as database
 
 #return match history and player details
-def get_details(client_id, player_id):
+def get_details(account_id, player_id):
     db = database.builder('foosbot')
 
-    player = db.table('users').where('client_id', client_id).where('id', player_id).first()
+    player = db.table('users').where('account_id', account_id).where('id', player_id).first()
 
     matches = db.table('matches').where(
         db.query().where('player1', player['id']).or_where('player2', player['id'])
@@ -30,7 +30,7 @@ def get_details(client_id, player_id):
         'total_played': 10, 
         'total_won': 9, 
         'longest_streak': 5,
-        'client_id':client_id
+        'account_id':account_id
     }
 
     return data

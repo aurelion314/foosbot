@@ -3,9 +3,9 @@ import foosbot.database as database
 from datetime import datetime
 
 class Handler():
-    def __init__(self, request, client_id):
-        if not client_id: raise Exception('No client_id provided to handler')
-        self.client_id = client_id
+    def __init__(self, request, account_id):
+        if not account_id: raise Exception('No account_id provided to handler')
+        self.account_id = account_id
         self.request = request
     
     def handle(self, request):
@@ -39,12 +39,12 @@ class Handler():
                 client_data.append({key: request.META[key]})
 
         # print(client_data)
-        #insert ping row with time, client_id, and ping data.
+        #insert ping row with time, account_id, and ping data.
         db = database.builder('foosbot')
         db.table('ping').insert({
-            'client_id':self.client_id, 
+            'account_id':self.account_id, 
             'ip':self.get_client_ip(request), 
-            'time':str(datetime.now()), 
+            'created_at':str(datetime.now()), 
             'meta_data':str(client_data)}
             )
 
