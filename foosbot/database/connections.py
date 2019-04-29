@@ -6,7 +6,7 @@ database_config = {
     'foosbot':{
         'driver': 'mysql',
         'host':'Aurelion.mysql.pythonanywhere-services.com',
-        'username':'Aurelion',
+        'user':'Aurelion',
         'password':'proth314',
         'database':'Aurelion$foosbot',
     }
