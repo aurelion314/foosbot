@@ -1,7 +1,14 @@
 database_config = {
-    'foosbot':{
+    'foosbot_dev':{
         'driver': 'sqlite',
         'database':'/home/proth/Documents/code/foosbot/foosbot/foos.db',
+    }
+    'foosbot':{
+        'driver': 'mysql',
+        'host':'Aurelion.mysql.pythonanywhere-services.com',
+        'username':'Aurelion',
+        'password':'proth314',
+        'database':'Aurelion$foosbot',
     }
 }
 

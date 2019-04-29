@@ -25,7 +25,7 @@ SECRET_KEY = '1u2v8(!&pytu&d1!=7z_*+ci=oz)9u2=lpzoz^=5w7_pqzvyd^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [u'Aurelion.pythonanywhere.com', u'127.0.0.1']
 
 
 # Application definition
@@ -118,4 +118,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
+STATIC_URL = '/static/'
+
+# default static files settings for PythonAnywhere.
+# see https://help.pythonanywhere.com/pages/DjangoStaticFiles for more info
+MEDIA_ROOT = u'/home/Aurelion/foosbot/media'
+MEDIA_URL = '/media/'
+STATIC_ROOT = u'/home/Aurelion/foosbot/static'
 STATIC_URL = '/static/'
