@@ -2,7 +2,7 @@ database_config = {
     'foosbot_dev':{
         'driver': 'sqlite',
         'database':'/home/proth/Documents/code/foosbot/foosbot/foos.db',
-    }
+    },
     'foosbot':{
         'driver': 'mysql',
         'host':'Aurelion.mysql.pythonanywhere-services.com',
@@ -32,6 +32,11 @@ def get_ssl(config):
     from credentials import ssl_alternatives
     for row in ssl_alternatives:
         if path.isfile(row.get('ca')): return row
+
+def get_local_name(name):
+    pass
+    #If running on local, return dev version of connection string
+    
         
 # This class creates and maintains database connections. 
 # Simply initialize it with connection name and a connection object will be returned
