@@ -18,6 +18,7 @@ def connection(name):
 
 # convenience function for creating a db query builder object
 def builder(name):
+    name = get_local_name(name) #Check for local test environment
     return Builder(name)
 
 def schema(name):
@@ -34,8 +35,12 @@ def get_ssl(config):
         if path.isfile(row.get('ca')): return row
 
 def get_local_name(name):
-    pass
     #If running on local, return dev version of connection string
+    import os.path as path
+    if path.isfile('/home/proth/Documents/code/foosbot/README.md'): 
+        return name+'_dev'
+
+    return name
     
         
 # This class creates and maintains database connections. 

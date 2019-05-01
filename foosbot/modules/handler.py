@@ -14,19 +14,19 @@ class Handler():
 
         if action == 'rfid':
             import foosbot.modules.actions as actions
-            return actions.rfid(r)
+            return actions.rfid(r, self.account_id)
         if action == 'start':
             import foosbot.modules.actions as actions
-            return actions.start(r)
+            return actions.start(r, self.account_id)
         if action == 'end':
             import foosbot.modules.actions as actions
-            return actions.end(r)
+            return actions.end(r, self.account_id)
         if action == 'remove':
             import foosbot.modules.actions as actions
-            return actions.remove(r)
+            return actions.remove(r, self.account_id)
         if action == 'say':
             import foosbot.modules.actions as actions
-            return actions.say(r)
+            return actions.say(r, self.account_id)
         if action == 'ping':
             return self.ping(request)
 

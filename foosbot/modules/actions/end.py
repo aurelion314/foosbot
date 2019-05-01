@@ -1,7 +1,7 @@
 import foosbot.database as database
 from datetime import datetime, timedelta
 
-def end(data):
+def end(data, account_id):
     db = database.builder('foosbot')    
 
     #validate
@@ -14,7 +14,7 @@ def end(data):
     loser = db.table('users').where('id', loser).first()
 
     #ensure there is a match in progress
-    res = db.table('matches').where('player1', data['player1']).where('player2', data['player2']).where('status', 'in_progress').first()
+    res = db.table('matches').where('account_id', account_id).where('player1', data['player1']).where('player2', data['player2']).where('status', 'in_progress').first()
     if not res: return {'status': 'no match found'}
 
     #find winning player steak
@@ -37,7 +37,7 @@ def end(data):
 
     #update the match
     res = db.table('matches').where('player1', data['player1']).where('player2', data['player2']).where('status', 'in_progress') \
-        .update({'status': 'complete', 'winner':data['winner'], 'updated_at':str(datetime.now()), 'delta_elo': points_won})
+        .update({'status': 'complete', 'winner':data['winner'], 'updated_at':str(datetime.now()), 'points': points_won})
 
     db.table('users').where('id', winner['id']).update({'elo': winner['elo'] + elo_won, 'points':winner['points'] + points_won})
     db.table('users').where('id', loser['id']).update({'elo': loser['elo'] - elo_lost, 'points':loser['points'] - points_lost})

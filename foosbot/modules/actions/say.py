@@ -1,6 +1,6 @@
 import requests, json
 
-def say(data):
+def say(data, account_id):
     words = data['words']
 
     data = {
@@ -14,7 +14,7 @@ def say(data):
         },
         "voice": {
             "languageCode": "en-GB",
-            "name": "en-GB-Standard-A"
+            "name": "en-GB-Wavenet-A"
         }
     }
 
@@ -23,7 +23,13 @@ def say(data):
 
     response = requests.post(url, json=data)
     r = response.json()
+
     if 'audioContent' in r:
-        return {'status':'success', 'result':r['audioContent']}
+        #Save audio to file
+        from base64 import b64decode
+        with open(f'./foosbot/static/audio/{account_id}.mp3','wb') as f:
+            f.write(b64decode(r['audioContent']))
+
+        return {'status':'success'}
     else:
         return {'status':'failed', 'result':str(r)}

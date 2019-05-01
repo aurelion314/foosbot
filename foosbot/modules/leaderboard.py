@@ -20,7 +20,7 @@ def get_details(account_id, player_id):
         else:
             match['winner_name'] = pname.getName(player2)
             match['loser_name'] = player['fname']
-        match['delta_elo'] = int(match['delta_elo'])
+        match['points'] = int(match['points'])
         match['created_at'] = match['created_at'][:11]
     
 

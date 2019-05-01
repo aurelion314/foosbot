@@ -5,7 +5,7 @@ import foosbot.database as database
 
 # Create your views here.
 def input(request, account_id):
-    return render(request, 'foosbot/input.html')
+    return render(request, 'foosbot/input.html', context={'account_id':account_id})
 
 def leaderboard(request, account_id):
     db = database.builder('foosbot')
@@ -22,15 +22,15 @@ def leaderboard_details(request, account_id):
     
     return render(request, 'foosbot/details.html',context=data)
 
-def verify_hash(request, account_id, secret):
+def verify_hash(request, account_id, token):
     db = database.builder('foosbot')
-    # newd = {'id': account_id, 'name':'McTesterson', 'secret':'test!'}
+    # newd = {'id': account_id, 'name':'McTesterson', 'token':'test!'}
     # res = db.table('clients').insert(newd)
     res = db.table('clients').where('account_id', account_id).first()
     # res = db.table('clients').first()
     print(res)
     if not res: return HttpResponse('Client not found: '+str(account_id))
-    if res['secret'] != secret: return('Invalid key')
+    if res['token'] != token: return('Invalid key')
     
     #Looks good. Authenticate them and redirect to input page.
     return redirect(input, account_id=account_id)

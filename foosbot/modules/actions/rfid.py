@@ -1,4 +1,4 @@
-def rfid(data):
+def rfid(data, account_id):
     import foosbot.database as database
     from datetime import datetime, timedelta
 
@@ -7,7 +7,7 @@ def rfid(data):
     rfid = data['rfid']
     #look up rfid 
     # db.table('users').insert({'username': 'proth', 'fname':'Proth', 'rfid':2, 'points':1500})
-    player = db.table('users').where('rfid', rfid).first()
+    player = db.table('users').where('account_id', account_id).where('rfid', rfid).first()
     if not player: 
         return {'status':'not found'}
 

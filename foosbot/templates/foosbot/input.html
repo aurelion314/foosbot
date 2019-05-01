@@ -40,7 +40,7 @@
   <nav class="navbar navbar-inverse navbar-fixed-top">
 
     <div class="collapse navbar-collapse" id="myNavbar">
-      <ul class="nav navbar-nav navbar-right">
+      <ul class="nav navbar-nav navbar-left">
         <li><a href="#">Input</a></li>
       </ul>
     </div>
@@ -76,7 +76,10 @@
 Cookies.set('name', 'value', { expires: 9999 });
 console.log(Cookies.get('name'))
 
-handler_url = '/100/handler'
+account_id = {{ account_id }}
+handler_url = '/'+account_id + '/handler'
+audio_base_url = '/static/audio/'
+audio_url = audio_base_url+account_id+'.mp3'
 
   data = {
     session_wakeup: 60,
@@ -257,15 +260,17 @@ handler_url = '/100/handler'
       $.post(handler_url, postval, function (response) {
         response = JSON.parse(response)
         //Audio content comes in as base64 string. Decode to binary.
-        var audioBinary = atob(response['result'])
+        // var audioBinary = atob(response['result'])
         // var audio_src = URL.createObjectURL(new MediaSource(audioBinary));
         // audio = new Audio(audio_src);
         // audio.srcObject = new MediaStream(audioBinary)
         // audio.play();
 
-        const audioBlob = new Blob([audioBinary], {type: "audio/mp3"});
-        const audioUrl = URL.createObjectURL(audioBlob);
-        audio = new Audio(audioUrl);
+        // audioBinary = []
+        // const audioBlob = new Blob([audioBinary], {type: "audio/mpeg3"});
+        // const audioBlob = new MediaSource([audioBinary], {type: "audio/mp3"});
+        // const audioUrl = URL.createObjectURL(audioBlob);
+        audio = new Audio(audio_url);
         audio.play();
 
         // var audio = new Audio('audio.mp3?v=' + Math.random());
