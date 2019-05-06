@@ -25,7 +25,7 @@ SECRET_KEY = '1u2v8(!&pytu&d1!=7z_*+ci=oz)9u2=lpzoz^=5w7_pqzvyd^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [u'Aurelion.pythonanywhere.com', u'127.0.0.1']
+ALLOWED_HOSTS = [u'Aurelion.pythonanywhere.com', u'127.0.0.1', u'192.168.1.6']
 
 
 # Application definition
@@ -80,7 +80,7 @@ DATABASES = {
     #     'HOST': 'Aurelion.mysql.pythonanywhere-services.com',
     #     'USER': 'Aurelion',
     #     'PASSWORD': 'proth314',
-    #     'DATABASE': 'Aurelion$foosbot',
+    #     'NAME': 'Aurelion$foosbot',
     #     'PORT': '3306',
     # }
     'default': {
@@ -89,6 +89,9 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'foosbot.User'
+
+LOGOUT_REDIRECT_URL = '/'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators

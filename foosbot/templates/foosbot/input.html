@@ -13,12 +13,15 @@
       padding-top: 0px;
     }
   }
+  .container {
+    width: 400px;
+    margin: 0 auto;
+  }
 
   .navbar-inverse {
     background-color: #487075;
     border-color: white;
   }
-
   .navbar-inverse .navbar-nav>li>a {
     color: #ffffff;
   }
@@ -38,12 +41,6 @@
 <body>
 
   <nav class="navbar navbar-inverse navbar-fixed-top">
-
-    <div class="collapse navbar-collapse" id="myNavbar">
-      <ul class="nav navbar-nav navbar-left">
-        <li><a href="#">Input</a></li>
-      </ul>
-    </div>
   </nav>
 
   <div class='container' style='padding-top:70px'>
@@ -52,7 +49,9 @@
       {{form}}
       <input type='text' id='input' autofocus>
     </form>
-<hr>
+
+    <hr>
+
     <div id="app">
       <span class='text-info'>[[ message ]]</span>
       <hr>
@@ -73,13 +72,13 @@
 
 
 <script>
-Cookies.set('name', 'value', { expires: 9999 });
-console.log(Cookies.get('name'))
+  Cookies.set('name', 'value', { expires: 9999 });
+  console.log(Cookies.get('name'))
 
-account_id = {{ account_id }}
-handler_url = '/'+account_id + '/handler'
-audio_base_url = '/static/audio/'
-audio_url = audio_base_url+account_id+'.mp3'
+  account_id = {{ account_id }}
+  handler_url = '/' + account_id + '/handler'
+  audio_base_url = '/static/audio/'
+  audio_url = audio_base_url + account_id + '.mp3'
 
   data = {
     session_wakeup: 60,
@@ -123,24 +122,24 @@ audio_url = audio_base_url+account_id+'.mp3'
 
     function wakeup() {
       data.session_wakeup = 60
-      $.post(handler_url, {'action':'ping'}, function (response) {
+      $.post(handler_url, { 'action': 'ping' }, function (response) {
         response = JSON.parse(response)
-        if (response.result == 'reload'){
+        if (response.result == 'reload') {
           location.reload();
         }
-        return(false);
+        return (false);
       });
     }
 
     function processResponse(response) {
       response = JSON.parse(response)
 
-      if (response.status=='not found') {
+      if (response.status == 'not found') {
         data.message = 'Player not found!'
         playAudio('Player not found!')
         return;
       }
-      
+
       var date = new Date()
       var player = response['result'];
       console.log(player)
@@ -192,7 +191,7 @@ audio_url = audio_base_url+account_id+'.mp3'
           playAudio('' + data.match_data.player1_name + ' versus ' + data.match_data.player2_name + ', ' + serving + ' serves.')
           updateSlack('Match Started! ' + data.match_data.player1_name + ' versus ' + data.match_data.player2_name + '.')
           if (data.match_data.timeout < 1000) { data.match_data.timeout = 1000 }
-          
+
           return true;
         });
         return false;
@@ -224,7 +223,7 @@ audio_url = audio_base_url+account_id+'.mp3'
       loser = (player['id'] == postval.player1) ? postval.player2 : postval.player1;
       $.post(handler_url, postval, function (response) {
         response = JSON.parse(response)
-        if (response.status != 'success'){
+        if (response.status != 'success') {
           data.message = 'Match completion failed: ' + response.status;
           return;
         }
@@ -282,7 +281,7 @@ audio_url = audio_base_url+account_id+'.mp3'
         //   }
         //   return false
         // });
-        
+
         // audio.play();
         return true;
       });

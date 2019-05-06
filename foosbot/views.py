@@ -1,8 +1,11 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseBadRequest
 from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
+from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
+from json import dumps
+
 import foosbot.database as database
+
 
 def input(request, account_id):
     if request.session.get('account_id') != account_id: raise PermissionDenied
@@ -12,6 +15,49 @@ def leaderboard(request, account_id):
     db = database.builder('foosbot')
     players = db.table('users').order_by('points', 'desc').get()
     return render(request, 'foosbot/leaderboard.html',context={'players':players, 'account_id':account_id})
+
+def setup(request, account_id):
+    if not request.user.is_authenticated or request.user.account != account_id: raise PermissionDenied
+    db = database.builder('foosbot')
+    account = db.table('accounts').where('id', request.user.account).first()
+    if account:
+        return render(request, 'foosbot/setup.html', context={'account_name': account.name, 'account_id':account_id})
+    else:
+        return HttpResponseNotFound()
+
+@csrf_exempt
+def player(request, account_id):
+    if not request.user.is_authenticated or request.user.account != account_id: raise PermissionDenied
+    db = database.builder('foosbot')
+    players = db.table('users').where('account_id', request.user.account).order_by('fname', 'asc').get()
+    print(players[0])
+    data = [{'fname':p.fname, 'lname':p.lname, 'photo':p.photo, 'rfid':p.rfid} for p in players]
+    return HttpResponse(dumps({'status':'success', 'result':data}))
+
+
+@csrf_exempt
+def login(request):
+
+    if request.method=='GET':
+        from django.contrib.auth.models import User
+        #check if they are already logged in, and return setup page 
+        if request.user.is_authenticated and request.user.account:
+            return redirect(setup, account_id=int(request.user.account or 0))
+        #else goto login page
+        return render(request,'foosbot/login.html')
+    else:
+        r = request.POST
+        username = r.get('username')
+        password = r.get('password')
+
+        from django.contrib.auth import authenticate, login
+        user = authenticate(username = username, password = password)
+        if user is not None:
+            if not user.account: return HttpResponse(dumps({'status':'User is not connected to an account'}))
+            login(request, user)
+            return HttpResponse(dumps({'status':'success', 'account_id':user.account}))
+        
+        return HttpResponse(dumps({'status':'User not found'}))
 
 @csrf_exempt
 def leaderboard_details(request, account_id):
@@ -46,7 +92,6 @@ def handler(request, account_id):
     if request.session.get('account_id') != account_id: raise PermissionDenied
 
     from foosbot.modules.handler import Handler
-    from json import dumps
 
     hand = Handler(request, account_id)
     response = hand.handle(request)

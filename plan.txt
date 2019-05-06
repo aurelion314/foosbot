@@ -1,0 +1,35 @@
+General idea:
+    Commercialize the tap in fob system we use at EM.
+
+Hardware
+Tapping In:
+    1. Fobs
+    2. Fob reader
+    3. Computer/Pi to receive and process fob data
+    4. Speakers
+
+System
+Back end tracking:
+    1. Database of users, fob ids, and matches.
+    2. Simple API similar to what exists already
+    
+Front End:
+    1. Slack bot
+        -They will have to bring it into a channel
+        -Simple updates to game status and losers/winners
+        -Add links to the leaderboard page.
+    2. Dedicated site
+        -Leaderboard
+        -Admin login to add/remove/update users
+
+Fob Puck:
+    1. JS web page like EM. It will have a health ping, and able to receive a refresh page command (to refresh JS code)
+    2. It holds game state just like EM system (prevent delay and conflicting ajax calls)
+    3. Is a linux distro that does nothing but opens up browser to my page. Each puck installed with a token that maps to client
+
+Hosting
+    1. PythonAnywhere setup with remote DB access and Git pull
+    2. Sessions for security (hit token page, verify running pi, logs in, everything else restricted)
+    3. Make users page. Single login for an admin, and gives lists to make users and assign rfid
+    4. Make leaderboard page accisble via token url (big hash, but otherwise open to public). Link from slack.
+    5. Make Slack bot based on basic URL hooks (they can install a slackbot and give me url or set it in admin page)

@@ -1,0 +1,157 @@
+{% extends 'foosbot/base.html' %}
+
+{% block body %}
+
+<style>
+    .custom_input {
+        padding-left: 0px;
+        padding-right: 0px;
+        padding-top: 2px;
+    }
+
+    /* .table {border: 0px solid black!important;} 
+.table tr, .table td, .table th {border: 0!important;}
+.table tr td, 
+.table tr th {border-left: 0px solid black!important;}
+.table tr td:nth-child(1), 
+.table tr th:nth-child(1) {border-left: 0!important;} */
+</style>
+
+<div class="container" style="width:80%">
+    <div class="page-header">
+        <h2 class='text-left'>Setup<br></h2>
+    </div>
+
+    <!-- <h4 class='text-left'>Account <small> {{ account_name }} </small></h4>
+    <br> -->
+
+    <div class="row">
+        <div class="col-md-3">
+            <h4 class='text-left'>Account <small> {{ account_name }} </small></h4>
+        </div>
+        <div class="col-md-4"></div>
+        <div class="col-md-3">
+            <h4 class='text-right'>SlackBot <small> {{ account_name }} </small></h4>
+        </div>
+    </div>
+    <br>
+    <!-- <hr> -->
+
+    <h4 class='text-left'>Players</h4>
+    <!-- <form id="id_new_page_form" action="/setup_edit" method="POST">
+        <div class="input-group">
+            <div class="col-md-3 custom_input">
+                <input class="form-control" name="action" type="hidden" value="add_page">
+                <input id="id_firstname" class="form-control" name="url" type="text" required placeholder="First Name">
+            </div>
+            <div class="col-md-3 custom_input">
+                <input id="id_lastname" class="form-control" name="url" type="text" placeholder="Last Name">
+            </div>
+            <div class="col-md-2 custom_input">
+                <input id="id_photo" class="form-control" name="url" type="text" placeholder="Photo URL">
+            </div>
+            <div class="col-md-2 custom_input">
+                <input id="id_rfid" class="form-control" name="url" type="number" required placeholder="RFID #">
+            </div>
+            <div class="col-md-2 custom_input">
+                <span class="input-group-btn">
+                    <button id="id_new_link_button" type="submit" class="btn btn-default">Add Player</button>
+                </span>
+            </div>
+        </div>
+    </form> -->
+    
+    <br>
+    
+    <button id="id_new_link_button" class="btn btn-default" data-toggle="modal" data-target="#player_modal">Add Player</button>
+
+    <div id="app_players" v-cloak>
+        <table id="id_users_table" class="table hoverable">
+            <thead>
+                <th></th>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Last Name
+                </th>
+                <th>
+                    Photo url
+                </th>
+                <th>
+                    RFID #
+                </th>
+                <th></th>
+
+            </thead>
+            <tbody>
+                <tr v-for="player in players">
+                    <td style="width:24px"><span> <i class="glyphicon glyphicon-trash pale"> </i> </span> </td>
+                    <td>
+                        [[ player.fname ]]
+                    </td>
+                    <td>
+                        [[ player.lname ]]
+                    </td>
+                    <td>
+                        [[ player.photo ]]
+                    </td>
+                    <td>
+                        [[ player.rfid ]]
+                    </td>
+                    <td style="width:24px"><span> <i class="glyphicon glyphicon-cog pale"> </i> </span> </td>
+                    <!-- <td style = "width:25%"><button class = "btn btn-danger"> <span> <i class="glyphicon glyphicon-trash pale"> Remove </i> </span> </button> </td> -->
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+
+<!-- Modal -->
+    <div id="player_modal" class="modal fade" role="dialog">
+        <div class="modal-dialog"> <!--style = "width: 850px;"-->
+    
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Player Details</h4>
+                </div>
+                <div id = "details-content" class="modal-body">
+                        <form id="id_new_page_form" action="/setup_edit" method="POST">
+                            <div class="input-group">
+                                <div class="col-md-3 custom_input">
+                                    <input class="form-control" name="action" type="hidden" value="add_page">
+                                    <input id="id_firstname" class="form-control" name="url" type="text" required placeholder="First Name">
+                                </div>
+                                <div class="col-md-3 custom_input">
+                                    <input id="id_lastname" class="form-control" name="url" type="text" placeholder="Last Name">
+                                </div>
+                                <div class="col-md-2 custom_input">
+                                    <input id="id_photo" class="form-control" name="url" type="text" placeholder="Photo URL">
+                                </div>
+                                <div class="col-md-2 custom_input">
+                                    <input id="id_rfid" class="form-control" name="url" type="number" required placeholder="RFID #">
+                                </div>
+                                <div class="col-md-2 custom_input">
+                                    <span class="input-group-btn">
+                                        <button id="id_new_link_button" type="submit" class="btn btn-success">Save Player</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+    
+        </div>
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="../static/js/setup.js" type="text/javascript"></script>
+
+{% endblock %}
