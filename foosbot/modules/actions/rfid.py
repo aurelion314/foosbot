@@ -7,7 +7,7 @@ def rfid(data, account_id):
     rfid = data['rfid']
     #look up rfid 
     # db.table('users').insert({'username': 'proth', 'fname':'Proth', 'rfid':2, 'points':1500})
-    player = db.table('users').where('account_id', account_id).where('rfid', rfid).first()
+    player = db.table('users').where('account_id', account_id).where_null('deleted_at').where('rfid', rfid).first()
     if not player: 
         return {'status':'not found'}
 

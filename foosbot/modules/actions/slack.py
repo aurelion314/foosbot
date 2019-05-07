@@ -1,30 +1,23 @@
 import requests, json
+import foosbot.database as database
 
 def slack(data, account_id):
-    words = data['words']
+    db = database.builder('foosbot')    
+    account = db.table('accounts').where('id', account_id).first()
+    url = account['slack_url']
+
+    message = data['message']
 
     data = {
-        "audioConfig": {
-            "audioEncoding": "LINEAR16",
-            "pitch": 0.4,
-            "speakingRate": 1
-        },
-        "input": {
-            "text": words
-        },
-        "voice": {
-            "languageCode": "en-GB",
-            "name": "en-GB-Wavenet-A"
-        }
+        'text': message
     }
 
+    # url = 'https://hooks.slack.com/services/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'
+
     #ping slack
-    url = 'https://texttospeech.googleapis.com/v1/text:synthesize?key=AIzaSyC5_MLIKaakmLzOBGJNulIKUS89FqRh4I0'
-
     response = requests.post(url, json=data)
-    r = response.json()
-
-    if 'audioContent' in r:
+    
+    if response.status_code == 200:
         return {'status':'success'}
     else:
-        return {'status':'failed', 'result':str(r)}
+        return {'status':'failed', 'result':response.content}

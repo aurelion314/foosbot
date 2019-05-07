@@ -27,6 +27,9 @@ class Handler():
         if action == 'say':
             import foosbot.modules.actions as actions
             return actions.say(r, self.account_id)
+        if action == 'slack':
+            import foosbot.modules.actions as actions
+            return actions.slack(r, self.account_id)
         if action == 'ping':
             return self.ping(request)
 

@@ -2,7 +2,8 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
-from json import dumps
+from json import dumps, loads
+from datetime import datetime
 
 import foosbot.database as database
 
@@ -13,7 +14,7 @@ def input(request, account_id):
 
 def leaderboard(request, account_id):
     db = database.builder('foosbot')
-    players = db.table('users').order_by('points', 'desc').get()
+    players = db.table('users').where('account_id', account_id).where_null('deleted_at').order_by('points', 'desc').get()
     return render(request, 'foosbot/leaderboard.html',context={'players':players, 'account_id':account_id})
 
 def setup(request, account_id):
@@ -21,7 +22,7 @@ def setup(request, account_id):
     db = database.builder('foosbot')
     account = db.table('accounts').where('id', request.user.account).first()
     if account:
-        return render(request, 'foosbot/setup.html', context={'account_name': account.name, 'account_id':account_id})
+        return render(request, 'foosbot/setup.html', context={'account_name': account.name, 'account_id':account_id, 'slack_url': account.slack_url})
     else:
         return HttpResponseNotFound()
 
@@ -29,9 +30,41 @@ def setup(request, account_id):
 def player(request, account_id):
     if not request.user.is_authenticated or request.user.account != account_id: raise PermissionDenied
     db = database.builder('foosbot')
-    players = db.table('users').where('account_id', request.user.account).order_by('fname', 'asc').get()
-    print(players[0])
-    data = [{'fname':p.fname, 'lname':p.lname, 'photo':p.photo, 'rfid':p.rfid} for p in players]
+
+    #Patch to modify players
+    if request.method == 'PATCH':
+        r = loads(request.body)
+        #Patch means update or insert
+        if r['action'] == 'patch':
+            player = r['player']
+            player_data = {'account_id':account_id ,'fname':player['fname'].strip(), 'lname':player['lname'].strip(), 'rfid':player['rfid'], 'photo': player['photo'].strip()}
+        
+            #Check if this is an update or new player
+            if player.get('id'):
+                existing = db.table('users').where('account_id', account_id).where('id', player['id']).first()
+                db.table('users').where('id', existing['id']).update(player_data)
+            else: #player not in DB. insert it.
+                #First make sure this rfid isn't taken.
+                taken = db.table('users').where('account_id', account_id).where('rfid', player['rfid']).exists()
+                if taken:
+                    return HttpResponse(dumps({'status':'rfid taken or invalid'}))
+                db.table('users').insert(player_data)
+        
+        #Delete
+        elif r['action'] == 'delete':
+            player = r['player']
+            db.table('users').where('account_id', account_id).where('id', player['id']).update({'deleted_at':datetime.now()})
+
+        #no action? FAILURE
+        else:
+            return HttpResponse(dumps({'status':'failed'}))
+
+        return HttpResponse(dumps({'status':'success'}))
+
+    #if it wasn't a patch job, then its a query for player list
+    players = db.table('users').where('account_id', request.user.account).where_null('deleted_at').order_by('fname', 'asc').get()
+    
+    data = [{'id':p.id, 'fname':p.fname, 'lname':p.lname, 'photo':p.photo, 'rfid':p.rfid} for p in players]
     return HttpResponse(dumps({'status':'success', 'result':data}))
 
 

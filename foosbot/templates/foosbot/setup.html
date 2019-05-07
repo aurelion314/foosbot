@@ -31,39 +31,16 @@
         </div>
         <div class="col-md-4"></div>
         <div class="col-md-3">
-            <h4 class='text-right'>SlackBot <small> {{ account_name }} </small></h4>
+            <h4 class='text-right'>SlackBot <small> {{ slack_url }} </small></h4>
         </div>
     </div>
     <br>
     <!-- <hr> -->
 
     <h4 class='text-left'>Players</h4>
-    <!-- <form id="id_new_page_form" action="/setup_edit" method="POST">
-        <div class="input-group">
-            <div class="col-md-3 custom_input">
-                <input class="form-control" name="action" type="hidden" value="add_page">
-                <input id="id_firstname" class="form-control" name="url" type="text" required placeholder="First Name">
-            </div>
-            <div class="col-md-3 custom_input">
-                <input id="id_lastname" class="form-control" name="url" type="text" placeholder="Last Name">
-            </div>
-            <div class="col-md-2 custom_input">
-                <input id="id_photo" class="form-control" name="url" type="text" placeholder="Photo URL">
-            </div>
-            <div class="col-md-2 custom_input">
-                <input id="id_rfid" class="form-control" name="url" type="number" required placeholder="RFID #">
-            </div>
-            <div class="col-md-2 custom_input">
-                <span class="input-group-btn">
-                    <button id="id_new_link_button" type="submit" class="btn btn-default">Add Player</button>
-                </span>
-            </div>
-        </div>
-    </form> -->
-    
     <br>
     
-    <button id="id_new_link_button" class="btn btn-default" data-toggle="modal" data-target="#player_modal">Add Player</button>
+    <button id="id_new_player_button" class="btn btn-default" data-toggle="modal" data-target="#player_modal">Add Player</button>
 
     <div id="app_players" v-cloak>
         <table id="id_users_table" class="table hoverable">
@@ -85,22 +62,30 @@
 
             </thead>
             <tbody>
-                <tr v-for="player in players">
-                    <td style="width:24px"><span> <i class="glyphicon glyphicon-trash pale"> </i> </span> </td>
-                    <td>
-                        [[ player.fname ]]
+                <tr v-for="player in players" v-bind:id="player.id">
+                    <td style="width:24px">
+                        <span style="display:none" class="id">[[ player.id ]]</span>
+                        <span class = 'remove_player' style="cursor: pointer">
+                            <i class="glyphicon glyphicon-trash pale"> </i> 
+                        </span> 
                     </td>
                     <td>
-                        [[ player.lname ]]
+                        <span class="fname">[[ player.fname ]]</span>
                     </td>
                     <td>
-                        [[ player.photo ]]
+                        <span class="lname">[[ player.lname ]]</span>
                     </td>
                     <td>
-                        [[ player.rfid ]]
+                        <span class="photo">[[ player.photo ]]</span>
                     </td>
-                    <td style="width:24px"><span> <i class="glyphicon glyphicon-cog pale"> </i> </span> </td>
-                    <!-- <td style = "width:25%"><button class = "btn btn-danger"> <span> <i class="glyphicon glyphicon-trash pale"> Remove </i> </span> </button> </td> -->
+                    <td>
+                        <span class="rfid">[[ player.rfid ]]</span>
+                    </td>
+                    <td style="width:24px">
+                        <span class = 'edit_player' style="cursor: pointer">
+                            <i class="glyphicon glyphicon-cog pale"> </i> 
+                        </span>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -120,20 +105,20 @@
                     <h4 class="modal-title">Player Details</h4>
                 </div>
                 <div id = "details-content" class="modal-body">
-                        <form id="id_new_page_form" action="/setup_edit" method="POST">
+                        <form id="id_player_form" action="" method="POST">
                             <div class="input-group">
                                 <div class="col-md-3 custom_input">
-                                    <input class="form-control" name="action" type="hidden" value="add_page">
-                                    <input id="id_firstname" class="form-control" name="url" type="text" required placeholder="First Name">
+                                    <input id="player_id" class="form-control"  name="id" type="hidden" value="">
+                                    <input id="player_fname" class="form-control" name="fname" type="text" required placeholder="First Name">
                                 </div>
                                 <div class="col-md-3 custom_input">
-                                    <input id="id_lastname" class="form-control" name="url" type="text" placeholder="Last Name">
+                                    <input id="player_lname" class="form-control" name="lname" type="text" placeholder="Last Name">
                                 </div>
                                 <div class="col-md-2 custom_input">
-                                    <input id="id_photo" class="form-control" name="url" type="text" placeholder="Photo URL">
+                                    <input id="player_photo" class="form-control" name="photo" type="text" placeholder="Photo URL">
                                 </div>
                                 <div class="col-md-2 custom_input">
-                                    <input id="id_rfid" class="form-control" name="url" type="number" required placeholder="RFID #">
+                                    <input id="player_rfid" class="form-control" name="rfid" type="number" required placeholder="RFID #">
                                 </div>
                                 <div class="col-md-2 custom_input">
                                     <span class="input-group-btn">
@@ -142,6 +127,7 @@
                                 </div>
                             </div>
                         </form>
+                        <div id="modal_message" class="text-danger"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
