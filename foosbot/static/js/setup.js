@@ -27,7 +27,7 @@ $(document).ready(function () {
     });
 
     data = {
-        account_id: 100,
+        account_id: account_id,
         players: [
             { id: 1, fname: '', lname: '', photo: '', rfid: '' },
         ]
