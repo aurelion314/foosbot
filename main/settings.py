@@ -141,3 +141,7 @@ MEDIA_ROOT = u'/home/Aurelion/foosbot/media'
 MEDIA_URL = '/media/'
 STATIC_ROOT = u'/home/Aurelion/foosbot/foosbot/static'
 STATIC_URL = '/static/'
+
+#if testing locally use different static root
+if path.isfile('/home/proth/Documents/code/foosbot/README.md'): 
+    STATIC_ROOT = u'/home/proth/Documents/code/foosbot/foosbot/static'
