@@ -75,19 +75,23 @@ WSGI_APPLICATION = 'main.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'HOST': 'Aurelion.mysql.pythonanywhere-services.com',
-    #     'USER': 'Aurelion',
-    #     'PASSWORD': 'proth314',
-    #     'NAME': 'Aurelion$foosbot',
-    #     'PORT': '3306',
-    # }
     'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': 'Aurelion.mysql.pythonanywhere-services.com',
+        'USER': 'Aurelion',
+        'PASSWORD': 'proth314',
+        'NAME': 'Aurelion$foosbot',
+        'PORT': '3306',
+    }
+}
+
+#Overwrite DATABASES when testing locally
+import os.path as path
+if path.isfile('/home/proth/Documents/code/foosbot/README.md'): 
+    DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
-}
 
 AUTH_USER_MODEL = 'foosbot.User'
 

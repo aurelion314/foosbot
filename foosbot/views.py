@@ -7,7 +7,6 @@ from datetime import datetime
 
 import foosbot.database as database
 
-
 def input(request, account_id):
     if request.session.get('account_id') != account_id: raise PermissionDenied
     return render(request, 'foosbot/input.html', context={'account_id':account_id})
@@ -18,7 +17,8 @@ def leaderboard(request, account_id):
     return render(request, 'foosbot/leaderboard.html',context={'players':players, 'account_id':account_id})
 
 def setup(request, account_id):
-    if not request.user.is_authenticated or request.user.account != account_id: raise PermissionDenied
+    if not request.user.is_authenticated: return redirect(login)
+    if request.user.account != account_id: raise PermissionDenied
     db = database.builder('foosbot')
     account = db.table('accounts').where('id', request.user.account).first()
     if account:
