@@ -1,7 +1,7 @@
 <h3 style = "text-align: center;"> {{ player.fname }}</h3>
 
 <div class="panel panel-default" style = "text-align: center;">
-    <b>Points: {{ player.points|floatformat:0 }}</b>
+    <b>Points: {{ player.elo|floatformat:0 }}</b>
     <br>Total played: {{ total_played }}
     <br>Games won: {{ total_won }}
     <br>Longest streak: {{ longest_streak }}

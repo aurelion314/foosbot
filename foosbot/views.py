@@ -13,7 +13,7 @@ def input(request, account_id):
 
 def leaderboard(request, account_id):
     db = database.builder('foosbot')
-    players = db.table('users').where('account_id', account_id).where_null('deleted_at').order_by('points', 'desc').get()
+    players = db.table('users').where('account_id', account_id).where_null('deleted_at').order_by('elo', 'desc').get()
     account = db.table('accounts').where('id', account_id).first()
     return render(request, 'foosbot/leaderboard.html',context={'players':players, 'account_id':account_id, 'account_name':account['name']})
 
@@ -49,12 +49,14 @@ def player(request, account_id):
                 taken = db.table('users').where('account_id', account_id).where('rfid', player['rfid']).exists()
                 if taken:
                     return HttpResponse(dumps({'status':'rfid taken or invalid'}))
-                db.table('users').insert(player_data)
+
+                from foosbot.modules.player import create_player
+                create_player(player_data)
         
         #Delete
         elif r['action'] == 'delete':
             player = r['player']
-            db.table('users').where('account_id', account_id).where('id', player['id']).update({'deleted_at':datetime.now()})
+            db.table('users').where('account_id', account_id).where('id', player['id']).update({'deleted_at':datetime.now(), 'rfid':None})
 
         #no action? FAILURE
         else:

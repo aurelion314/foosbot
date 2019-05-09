@@ -33,11 +33,11 @@ def end(data, account_id):
     elo_won, elo_lost = get_real_elo_change(elo_change)
     points_won, points_lost = get_points_change(winner, loser, elo_won, elo_lost)
 
-    print(elo_change, elo_won, elo_lost, points_won, points_lost)
+    # print(elo_change, elo_won, elo_lost, points_won, points_lost)
 
     #update the match
     res = db.table('matches').where('player1', data['player1']).where('player2', data['player2']).where('status', 'in_progress') \
-        .update({'status': 'complete', 'winner':data['winner'], 'updated_at':str(datetime.now()), 'points': points_won})
+        .update({'status': 'complete', 'winner':data['winner'], 'updated_at':str(datetime.now()), 'points': elo_change})
 
     db.table('users').where('id', winner['id']).update({'elo': winner['elo'] + elo_won, 'points':winner['points'] + points_won})
     db.table('users').where('id', loser['id']).update({'elo': loser['elo'] - elo_lost, 'points':loser['points'] - points_lost})

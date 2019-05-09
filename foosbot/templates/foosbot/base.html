@@ -2,8 +2,12 @@
 <html lang="en">
 
 <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script> 
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+<!-- <link rel="stylesheet" href="../static/css/vendor/bootstrap.min.css"> -->
+<!-- <script src="../static/js/vendor/jquery.min.js"></script> -->
+<!-- <script src="../static/js/vendor/bootstrap.min.js"></script> -->
 
 <style>
   /* body {
@@ -55,6 +59,8 @@
         <ul class="nav navbar-nav navbar-right">
           <!-- <li><a href="/">Main</a></li> -->
           {% if user.is_authenticated %}
+          <li><a href="/{{ user.account }}/leaderboard">Leaderboard</a></li>
+          <li><a href="/{{ user.account }}/setup">Setup</a></li>
             <li><a href="/accounts/logout">Logout</a></li>
           {% endif %}
           <!-- <li {% if request.path == '/contact' %} class="active" {% endif %}><a href="/contact">Contact</a></li>

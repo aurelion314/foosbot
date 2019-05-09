@@ -62,7 +62,7 @@
                                     <img src="/storage/portrait/{{ player.photo }}" height="35" width="35" class="pic" /></td>
                                   </object>
                         <td class="name">{{ player.fname }}</td>
-                        <td class="elo"> {{ player.points|floatformat:0 }}</td>
+                        <td class="elo"> {{ player.elo|floatformat:0 }}</td>
                         <td><a href="#" data-toggle="modal" data-target="#details" class="btn-details btn btn-default btn-sm"><i class="glyphicon glyphicon-plus"></i> Details </a></td>
                     </tr>
                     {% endfor %}
