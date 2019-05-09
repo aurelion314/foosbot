@@ -25,7 +25,7 @@ SECRET_KEY = '1u2v8(!&pytu&d1!=7z_*+ci=oz)9u2=lpzoz^=5w7_pqzvyd^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [u'Aurelion.pythonanywhere.com', u'127.0.0.1', u'192.168.1.6']
+ALLOWED_HOSTS = [u'Aurelion.pythonanywhere.com', u'127.0.0.1', u'192.168.1.6', 'www.employeearcade.com']
 
 
 # Application definition
