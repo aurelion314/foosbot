@@ -14,7 +14,8 @@ def input(request, account_id):
 def leaderboard(request, account_id):
     db = database.builder('foosbot')
     players = db.table('users').where('account_id', account_id).where_null('deleted_at').order_by('points', 'desc').get()
-    return render(request, 'foosbot/leaderboard.html',context={'players':players, 'account_id':account_id})
+    account = db.table('accounts').where('id', account_id).first()
+    return render(request, 'foosbot/leaderboard.html',context={'players':players, 'account_id':account_id, 'account_name':account['name']})
 
 def setup(request, account_id):
     if not request.user.is_authenticated: return redirect(login)

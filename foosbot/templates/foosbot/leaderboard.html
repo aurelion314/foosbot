@@ -1,3 +1,6 @@
+{% extends 'foosbot/base.html' %}
+
+{% block body %}
 
 <style>
     .modal-header {
@@ -33,14 +36,15 @@
 </style>
 
 <head>
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 </head>
+
 <section class="wrapper container-fluid">
     <div id = "leaderboard" class="panel panel-default">
-        <div class="panel-heading"><h1 class="panel-title">Leaderboard</h1></div>
+        <div class="panel-heading"><h1 class="panel-title">{{ account_name }} Leaderboard</h1></div>
         <div id = "ranking-content" class="panel-body">
 
 
@@ -53,9 +57,12 @@
                     <tr>
                         <td style="display:none" class="player_id"> {{ player.id }}</td>
                         <td class="rank"> {{ forloop.counter0|add:1 }}</td>
-                        <td class="photo"><img src="/storage/portrait/{{ player.photo }}" height="45" class="pic" /></td>
+                        <td class="photo">
+                                <object data="/static/img/user.jpeg" height="35" width="35" type="image/png">
+                                    <img src="/storage/portrait/{{ player.photo }}" height="35" width="35" class="pic" /></td>
+                                  </object>
                         <td class="name">{{ player.fname }}</td>
-                        <td class="elo"> {{ player.points }}</td>
+                        <td class="elo"> {{ player.points|floatformat:0 }}</td>
                         <td><a href="#" data-toggle="modal" data-target="#details" class="btn-details btn btn-default btn-sm"><i class="glyphicon glyphicon-plus"></i> Details </a></td>
                     </tr>
                     {% endfor %}
@@ -110,3 +117,5 @@
         $('#details-content').html(data);
     }
 </script>
+
+{% endblock %}
