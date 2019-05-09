@@ -5,7 +5,7 @@ urlpatterns = [
     path('', views.login),
     path('login', views.login),
     path('<int:account_id>/input', views.input),
-    path('<int:account_id>/hash/<str:token>', views.verify_hash),
+    path('<int:account_id>/token', views.verify_token),
     path('<int:account_id>/handler', views.handler),
     path('<int:account_id>/leaderboard', views.leaderboard),
     path('<int:account_id>/details', views.leaderboard_details),

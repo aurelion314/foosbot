@@ -105,7 +105,10 @@ def leaderboard_details(request, account_id):
     
     return render(request, 'foosbot/details.html',context=data)
 
-def verify_hash(request, account_id, token):
+def verify_token(request, account_id):
+    r = request.GET
+    token = r.get('token')
+
     db = database.builder('foosbot')
     # newd = {'id': account_id, 'name':'McTesterson', 'token':'test'}
     # res = db.table('accounts').insert(newd)
