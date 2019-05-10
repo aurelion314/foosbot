@@ -4,7 +4,7 @@ def create_player(player):
     #We need to specify starting ELO before insertion.
     db = database.builder('foosbot')
 
-    players = db.table('users').where('account_id', player['account_id']).where_null('deleted_at').get()
+    players = db.table('users').where('account_id', player['account_id']).where_null('deleted_at').where_not_null('elo').get()
     
     #is this the first player?
     if not players:
