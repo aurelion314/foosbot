@@ -65,7 +65,8 @@ def slack(request):
     db.table('accounts').where('id', account_id).update({'slack_url':slack_url, 'slack_config_url': slack_config_url, 'slack_channel': slack_channel})
 
     #return custom page with link to setup, or redirect to setup
-    return HttpResponse('Added channel '+str(slack_channel))
+    return redirect(setup, account_id=int(account_id))
+    # return HttpResponse('Added channel '+str(slack_channel) + '. <a href="/">Return</a>')
 
 
 @csrf_exempt
