@@ -17,12 +17,12 @@ def end(data, account_id):
     res = db.table('matches').where('account_id', account_id).where('player1', data['player1']).where('player2', data['player2']).where('status', 'in_progress').first()
     if not res: return {'status': 'no match found'}
 
-    #find winning player steak
-    streak = 0
+    #find winning player streak
+    streak = 1
     games = db.table('matches').where(
         db.query().where('player1', winner['id']).or_where('player2', winner['id'])
     ) \
-    .where('status', 'complete').order_by('created_on', 'desc').get()
+    .where('status', 'complete').order_by('created_at', 'desc').get()
 
     for game in games:
         if game['winner'] != winner['id']: break
@@ -31,7 +31,7 @@ def end(data, account_id):
     #calculate the ELO change
     elo_change = calculate_elo_change(winner['elo'], loser['elo'])
     elo_won, elo_lost = get_real_elo_change(elo_change)
-    points_won, points_lost = get_points_change(winner, loser, elo_won, elo_lost)
+    # points_won, points_lost = get_points_change(winner, loser, elo_won, elo_lost)
 
     # print(elo_change, elo_won, elo_lost, points_won, points_lost)
 
@@ -39,13 +39,12 @@ def end(data, account_id):
     res = db.table('matches').where('player1', data['player1']).where('player2', data['player2']).where('status', 'in_progress') \
         .update({'status': 'complete', 'winner':data['winner'], 'updated_at':str(datetime.now()), 'points': elo_change})
 
-    db.table('users').where('id', winner['id']).update({'elo': winner['elo'] + elo_won, 'points':winner['points'] + points_won})
-    db.table('users').where('id', loser['id']).update({'elo': loser['elo'] - elo_lost, 'points':loser['points'] - points_lost})
+    db.table('users').where('id', winner['id']).update({'elo': winner['elo'] + elo_won}) #'points':winner['points'] + points_won
+    db.table('users').where('id', loser['id']).update({'elo': loser['elo'] - elo_lost}) #'points':loser['points'] - points_lost
 
     #return results
     return {'status': 'success', 'streak':streak}
 
-#points are what we show them. They start with low points, but actual skill score starts at average (1500)
 #We want them to be the same after a while, so even them out here.
 def get_points_change(winner, loser, elo_won, elo_lost):
     #Winning. If elo is higher, gain extra points up to max of 50

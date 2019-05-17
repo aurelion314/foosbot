@@ -65,7 +65,6 @@ $(document).ready(function () {
 
     var date = new Date()
     var player = response['result'];
-    console.log(player)
     if (player['id'] == '') { data.message = 'Player not found'; return (false); }
 
     //is player1 empty?
@@ -221,7 +220,6 @@ $(document).ready(function () {
   }
 
   function timeout() {
-    console.log('timeout')
     //If nothing has happened, ignore timeout
     if (data.match_data.player1 == '' && data.match_data.player2 == '') { return false }
 

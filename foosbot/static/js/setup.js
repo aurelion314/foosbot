@@ -5,7 +5,7 @@ $(document).ready(function () {
         $('#player_id').val(row.find('.id').html())
         $('#player_fname').val(row.find('.fname').html())
         $('#player_lname').val(row.find('.lname').html())
-        $('#player_photo').val(row.find('.photo').html())
+        $('#player_photo').val(row.find('.photo').attr('src'))
         $('#player_rfid').val(parseInt(row.find('.rfid').html()))
        
         $('#player_modal').modal('show');
@@ -15,6 +15,13 @@ $(document).ready(function () {
         if (confirm('Are you sure you want to delete a player?')){
             player_id = $(this).parent().parent().attr('id')
             deletePlayer(player_id)
+        }
+    });
+
+    $('#remove_slack').click(function(e){
+        if (confirm('Are you sure you want to remove slack integration?')){
+            console.log('removeo')
+            deleteSlack();
         }
     });
 
@@ -114,6 +121,27 @@ $(document).ready(function () {
             },
             error: function (jXHR, textStatus, errorThrown) {
                 console.log(errorThrown);
+            }
+        });
+    }
+
+    function deleteSlack(){
+        post_data={action:'remove_slack'}
+        $.ajax({
+            url : '/'+account_id+'/remove_slack',
+            type: "POST",
+            data: JSON.stringify(post_data),
+            contentType: 'application/json',
+            success: function (response) {
+                r = JSON.parse(response)
+                if (r.status == 'success'){
+                    location.reload();
+                }else{
+                    alert('Error occured removing slack.')
+                }
+            },
+            error: function (jXHR, textStatus, errorThrown) {
+                alert('Error occured communicating with server.')
             }
         });
     }

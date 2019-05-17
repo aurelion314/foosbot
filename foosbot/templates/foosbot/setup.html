@@ -8,6 +8,9 @@
         padding-right: 0px;
         padding-top: 2px;
     }
+    td>span>img {
+        border-radius: 50%;
+    }
 
     /* .table {border: 0px solid black!important;} 
 .table tr, .table td, .table th {border: 0!important;}
@@ -31,7 +34,22 @@
         </div>
         <div class="col-md-4"></div>
         <div class="col-md-3">
-            <h4 class='text-right'>SlackBot <small> {{ slack_url }} </small></h4>
+            <h4 class='text-right'> 
+                
+                {% if slack_channel %}
+                    Slack Channel 
+                    <small> 
+                        <a href="{{ slack_config_url }}">{{ slack_channel }}</a> 
+                        <span id = 'remove_slack' style="cursor: pointer">
+                            <i class="glyphicon glyphicon-trash pale"> </i> 
+                        </span>
+                    </small> 
+                {% else %}
+                Slack 
+                    <a href="https://slack.com/oauth/authorize?client_id=624952400887.615198951842&scope=incoming-webhook"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"></a>
+                {% endif %}
+                
+            </h4>
         </div>
     </div>
     <br>
@@ -40,10 +58,10 @@
     <h4 class='text-left'>Players</h4>
     <br>
     
-    <button id="id_new_player_button" class="btn btn-default" data-toggle="modal" data-target="#player_modal">Add Player</button>
+    <button id="id_new_player_button" class="btn btn-info" data-toggle="modal" data-target="#player_modal">Add Player</button>
 
     <div id="app_players" v-cloak>
-        <table id="id_users_table" class="table hoverable">
+        <table id="id_users_table" class="table hoverable table-hover">
             <thead>
                 <th></th>
                 <th>
@@ -53,10 +71,10 @@
                     Last Name
                 </th>
                 <th>
-                    Photo url
+                    Photo
                 </th>
                 <th>
-                    RFID #
+                    Fob #
                 </th>
                 <th></th>
 
@@ -76,7 +94,7 @@
                         <span class="lname">[[ player.lname ]]</span>
                     </td>
                     <td>
-                        <span class="photo">[[ player.photo ]]</span>
+                        <img class="photo" v-bind:src="player.photo" onerror="this.src='/static/img/user.jpeg'" height="35" width="35" />
                     </td>
                     <td>
                         <span class="rfid">[[ player.rfid ]]</span>
@@ -107,20 +125,25 @@
                 <div id = "details-content" class="modal-body">
                         <form id="id_player_form" action="" method="POST">
                             <div class="input-group">
-                                <div class="col-md-3 custom_input">
+                                <!-- <div class="col-md-3 custom_input"> -->
+                                <div class="col-sm-12">
                                     <input id="player_id" class="form-control"  name="id" type="hidden" value="">
                                     <input id="player_fname" class="form-control" name="fname" type="text" required placeholder="First Name">
                                 </div>
-                                <div class="col-md-3 custom_input">
+                                <!-- <div class="col-md-3 custom_input"> -->
+                                <div class="col-sm-12">
                                     <input id="player_lname" class="form-control" name="lname" type="text" placeholder="Last Name">
                                 </div>
-                                <div class="col-md-2 custom_input">
+                                <!-- <div class="col-md-2 custom_input"> -->
+                                <div class="col-sm-12">
                                     <input id="player_photo" class="form-control" name="photo" type="text" placeholder="Photo URL">
                                 </div>
-                                <div class="col-md-2 custom_input">
-                                    <input id="player_rfid" class="form-control" name="rfid" type="number" required placeholder="RFID #">
+                                <!-- <div class="col-md-2 custom_input"> -->
+                                <div class="col-sm-12">
+                                    <input id="player_rfid" class="form-control" name="rfid" type="number" required placeholder="Fob #">
                                 </div>
-                                <div class="col-md-2 custom_input">
+                                <!-- <div class="col-md-2 custom_input"> -->
+                                <div class="col-sm-4">
                                     <span class="input-group-btn">
                                         <button id="id_new_link_button" type="submit" class="btn btn-success">Save Player</button>
                                     </span>

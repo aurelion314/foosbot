@@ -5,7 +5,7 @@ Hardware
 Tapping In:
     1. Fobs
     2. Fob reader
-    3. Computer/Pi to receive and process fob data
+    3. Pi 3B to receive and process fob data
     4. Speakers
 
 System
@@ -33,3 +33,15 @@ Hosting
     3. Make users page. Single login for an admin, and gives lists to make users and assign rfid
     4. Make leaderboard page accisble via token url (big hash, but otherwise open to public). Link from slack.
     5. Make Slack bot based on basic URL hooks (they can install a slackbot and give me url or set it in admin page)
+
+
+TO DO:
+    Setup Pi
+        Fresh raspbian: https://www.raspberrypi.org/downloads/noobs/
+        Booting to chrome running under a service as per https://pimylifeup.com/raspberry-pi-kiosk/
+        Make a copy of this OS for future installs
+    Slack
+        Improve the message to show orange or green based on game state.
+    User Management
+        Make templates for password change
+        Make templates/whatever for my to make a user

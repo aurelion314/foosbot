@@ -12,10 +12,20 @@ def input(request, account_id):
     return render(request, 'foosbot/input.html', context={'account_id':account_id})
 
 def leaderboard(request, account_id):
+    if not request.user.is_authenticated or request.user.account != account_id: raise PermissionDenied
     db = database.builder('foosbot')
-    players = db.table('users').where('account_id', account_id).where_null('deleted_at').order_by('elo', 'desc').get()
     account = db.table('accounts').where('id', account_id).first()
-    return render(request, 'foosbot/leaderboard.html',context={'players':players, 'account_id':account_id, 'account_name':account['name']})
+    if not account: return HttpResponseNotFound()
+    #redirect to the token based leaderboard to keep render logic in one place
+    return redirect(leaderboard_token, token=account['token'])
+
+def leaderboard_token(request, token):
+    db = database.builder('foosbot')
+    account = db.table('accounts').where('token', token).first()
+    if not account: return HttpResponseNotFound()
+
+    players = db.table('users').where('account_id', account.id).where_null('deleted_at').order_by('elo', 'desc').get()
+    return render(request, 'foosbot/leaderboard.html',context={'players':players, 'account_id':account['id'], 'account_name':account['name']})
 
 def setup(request, account_id):
     if not request.user.is_authenticated: return redirect(login)
@@ -23,9 +33,48 @@ def setup(request, account_id):
     db = database.builder('foosbot')
     account = db.table('accounts').where('id', request.user.account).first()
     if account:
-        return render(request, 'foosbot/setup.html', context={'account_name': account.name, 'account_id':account_id, 'slack_url': account.slack_url})
+        return render(request, 'foosbot/setup.html', context={'account_name': account.name, 'account_id':account_id, 'slack_url': account.slack_url, 'slack_config_url':account.slack_config_url, 'slack_channel': account.slack_channel})
     else:
         return HttpResponseNotFound()
+
+def slack(request):
+    r = request.GET
+    print(r)
+
+    data = {}
+    data['code'] = r['code']
+    data['client_id'] = '624952400887.615198951842'
+    data['client_secret'] = 'd91d4794d106de4db1957c2f274346ae'
+    # data['redirect_uri'] = 'https://www.employeearcade.com/slack/'
+    
+    print(data)
+
+    import requests
+    res = requests.get('https://slack.com/api/oauth.access', data)
+    res = res.json()
+
+    print(res)
+    account_id = request.user.account
+    slack_url = res['incoming_webhook']['url']
+    slack_channel = res['incoming_webhook']['channel']
+    slack_config_url = res['incoming_webhook']['configuration_url']
+
+    #Add config url and channel name somewhere. Accounts table or new slack table
+
+    db = database.builder('foosbot')
+    db.table('accounts').where('id', account_id).update({'slack_url':slack_url, 'slack_config_url': slack_config_url, 'slack_channel': slack_channel})
+
+    #return custom page with link to setup, or redirect to setup
+    return HttpResponse('Added channel '+str(slack_channel))
+
+
+@csrf_exempt
+def remove_slack(request, account_id):
+    if not request.user.is_authenticated or request.user.account != account_id: raise PermissionDenied
+    db = database.builder('foosbot')
+
+    db.table('accounts').where('id', account_id).update({'slack_url':None, 'slack_config_url': None, 'slack_channel': None})
+    return HttpResponse(dumps({'status':'success'}))
 
 @csrf_exempt
 def player(request, account_id):
@@ -75,7 +124,12 @@ def player(request, account_id):
 def login(request):
 
     if request.method=='GET':
-        from django.contrib.auth.models import User
+        # from foosbot.models import User
+        # user=User.objects.create_user('evan', password='hello')
+        # user.is_superuser=False
+        # user.is_staff=True
+        # user.save()
+
         #check if they are already logged in, and return setup page 
         if request.user.is_authenticated and request.user.account:
             return redirect(setup, account_id=int(request.user.account or 0))

@@ -33,6 +33,9 @@
     body{
         background-color: #f1f2f7 !important;
     }
+    td>img {
+        border-radius: 50%;
+    }
 </style>
 
 <head>
@@ -58,9 +61,8 @@
                         <td style="display:none" class="player_id"> {{ player.id }}</td>
                         <td class="rank"> {{ forloop.counter0|add:1 }}</td>
                         <td class="photo">
-                                <object data="/static/img/user.jpeg" height="35" width="35" type="image/png">
-                                    <img src="/storage/portrait/{{ player.photo }}" height="35" width="35" class="pic" /></td>
-                                  </object>
+                                <img src="{{ player.photo }}" onerror="this.src='/static/img/user.jpeg'" height="35" width="35" />
+                        </td>
                         <td class="name">{{ player.fname }}</td>
                         <td class="elo"> {{ player.elo|floatformat:0 }}</td>
                         <td><a href="#" data-toggle="modal" data-target="#details" class="btn-details btn btn-default btn-sm"><i class="glyphicon glyphicon-plus"></i> Details </a></td>
@@ -94,6 +96,7 @@
 </section>
 
 <script>
+    account_id = {{ account_id }}
 
     $(document.body).on('click', '.btn-details', function (event) {
         $('#details-content').html('');
@@ -101,7 +104,7 @@
         var mydata = {'action': 'details', 'player': player};
         $.ajax({
             type: "POST",
-            url: 'details',
+            url: '/'+account_id+'/details',
             data: mydata,
             cache: false,
             success: function (data) {
