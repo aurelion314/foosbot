@@ -4,6 +4,9 @@ def start(data, account_id):
     
     db = database.builder('foosbot')
 
+    #New game starting. There should be no in progress games. If there are, set it to failed.
+    db.table('matches').where('account_id', account_id).where('status', 'in_progress').update({'status':'failed', 'updated_at': str(datetime.now())})
+
     game = {
         'account_id': account_id,
         'player1': data['player1'],
