@@ -1,4 +1,5 @@
 import foosbot.database as database
+from dateutil import parser
 
 #return match history and player details
 def get_details(account_id, player_id):
@@ -28,7 +29,8 @@ def get_details(account_id, player_id):
             streak = 0
 
         match['points'] = int(match['points'])
-        match['created_at'] = match['created_at'][:11]
+        match['created_at'] = parser.parse(str(match['created_at'])[:11])
+        match['created_at'] = match['created_at'].strftime("%b %d")
 
         if streak > longest_streak: longest_streak = streak
     
