@@ -18,4 +18,4 @@ def rfid(data, account_id):
     wins = db.table('matches').where('created_at', '>', str(datetime.now() - timedelta(days=1))).where('winner', player['id']).where('status', 'complete').count()
     
     #return results
-    return {'status':'success', 'result':{'id':player['id'], 'name':player['fname'], 'games_today': games, 'wins_today': wins, 'points': player['points']}}
+    return {'status':'success', 'result':{'id':player['id'], 'name':player['fname'], 'games_today': games, 'wins_today': wins, 'points': player['elo']}}

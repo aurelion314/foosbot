@@ -45,3 +45,4 @@ TO DO:
     User Management
         Make templates for password change
         Make templates/whatever for my to make a user
+        Welcome email when they add a player. Need email column and option to send email or not.

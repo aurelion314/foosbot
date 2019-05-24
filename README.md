@@ -19,3 +19,9 @@ As described on https://blog.eq8.eu/til/raspberi-pi-as-kiosk-load-browser-on-sta
 2. sudo nmap -sP 192.168.1.0/24 | awk '/^Nmap/{ip=$NF}/B8:27:EB/{print ip}'
 3. ssh pi@<Pi IP>
 4. pass: raspberry
+
+# Pi Clone
+1. sudo fdisk -l
+2. sudo ionice -c3 dd bs=4M of=/dev/sdc if=~/pi_template.img
+3. Set the account token (ask Mike how)
+4. If reinstall required, follow https://pimylifeup.com/raspberry-pi-kiosk/

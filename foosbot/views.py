@@ -90,16 +90,16 @@ def player(request, account_id):
             player = r['player']
             player_data = {'account_id':account_id ,'fname':player['fname'].strip(), 'lname':player['lname'].strip(), 'rfid':player['rfid'], 'photo': player['photo'].strip()}
         
+            #First make sure this rfid isn't taken.
+            taken = db.table('users').where('account_id', account_id).where('rfid', player['rfid']).exists()
+            if taken:
+                return HttpResponse(dumps({'status':'rfid taken or invalid'}))
+
             #Check if this is an update or new player
             if player.get('id'):
                 existing = db.table('users').where('account_id', account_id).where('id', player['id']).first()
                 db.table('users').where('id', existing['id']).update(player_data)
             else: #player not in DB. insert it.
-                #First make sure this rfid isn't taken.
-                taken = db.table('users').where('account_id', account_id).where('rfid', player['rfid']).exists()
-                if taken:
-                    return HttpResponse(dumps({'status':'rfid taken or invalid'}))
-
                 from foosbot.modules.player import create_player
                 create_player(player_data)
         
