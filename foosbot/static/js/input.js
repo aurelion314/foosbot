@@ -104,7 +104,7 @@ $(document).ready(function () {
         data.match_data.updated_at = date //.toISOString().substring(0, 10) + '  ' + date.toISOString().substring(11, 19)
 
         var serving;
-        if (data.match_data.player1_rank > player['points']) {
+        if (parseInt(data.match_data.player1_rank) > parseInt(player['points'])) {
           serving = player['name'];
         } else {
           serving = data.match_data.player1_name;
