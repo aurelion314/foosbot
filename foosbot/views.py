@@ -160,24 +160,29 @@ def leaderboard_details(request, account_id):
     
     return render(request, 'foosbot/details.html',context=data)
 
-def verify_token(request, account_id):
+def verify_token(request, account_id=None):
     r = request.GET
     token = r.get('token')
 
     db = database.builder('foosbot')
-    # newd = {'id': account_id, 'name':'McTesterson', 'token':'test'}
-    # res = db.table('accounts').insert(newd)
-    res = db.table('accounts').where('id', account_id).first()
     
-    if not res: return HttpResponse('Client not found: '+str(account_id))
+    #Authentication can be with reader token or with account_id and account token (old version)
+    if account_id:
+        account = db.table('accounts').where('id', account_id).first()
+        if not account: return HttpResponse('Client not found: '+str(account_id))
+        if account['token'] != token: return HttpResponse('Invalid Token')
+    else:
+        reader = db.table('readers').where('token', token).first()
+        if not reader: return HttpResponse('Reader not configured: '+str(token))
+        account = db.table('accounts').where('id', reader['account']).first()
+        if not account: return HttpResponse('Reader not assigned: '+str(token))
+        account_id = account['id']
 
-    if res['token'] != token: return HttpResponse('Invalid Token')
     
     #Looks good. Authenticate them and redirect to input page.
     request.session['account_id'] = account_id
     request.session.set_expiry(360000000)
 
-    # return HttpResponse('Success')
     return redirect(input, account_id=account_id)
 
 @csrf_exempt

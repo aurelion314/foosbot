@@ -6,6 +6,7 @@ urlpatterns = [
     path('login', views.login),
     path('<int:account_id>/input', views.input),
     path('<int:account_id>/token', views.verify_token),
+    path('token', views.verify_token),
     path('<int:account_id>/handler', views.handler),
     path('leaderboard/<str:token>', views.leaderboard_token),
     path('<int:account_id>/leaderboard', views.leaderboard),
