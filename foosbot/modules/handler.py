@@ -30,6 +30,9 @@ class Handler():
         if action == 'slack':
             import foosbot.modules.actions as actions
             return actions.slack(r, self.account_id)
+        if action == 'leaderboard':
+            import foosbot.modules.leaderboard as leaderboard
+            return leaderboard.get_leaderboard(r, self.account_id)
         if action == 'ping':
             return self.ping(request)
 

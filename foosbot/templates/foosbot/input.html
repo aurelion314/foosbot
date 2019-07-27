@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-  
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-  
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
 <style>
-  body {
+  /* body {
     padding-top: 70px;
-  }
+  } */
 
   @media (max-width: 979px) {
     body {
@@ -29,10 +29,14 @@
   .navbar-inverse .navbar-nav>li>a {
     color: #ffffff;
   }
+
+  .table th {
+   text-align: center;   
+}
 </style>
 
 <script>
-account_id = {{ account_id }}
+  account_id = {{ account_id }}
 </script>
 
 <head>
@@ -52,25 +56,62 @@ account_id = {{ account_id }}
   </nav>
 
   <div class='container' style='padding-top:70px'>
+
+    <div id="status_app">
+      Info:
+      <span class='text-info'> [[ message ]] </span>
+      <br>
+      Timeout:
+      <span class='text-info'> [[ match_data.timeout ]] </span>
+      <!-- 
+        [[ session_wakeup ]]
+        <div v-for="(value, key) in match_data">
+          [[ key ]] : [[ value ]]
+        </div>
+         -->
+    </div>
+
     <form>
-      <input type='text' id='input' autofocus>
+      <input type='text' id='input' style="color:white; border: 0; outline: none" autocomplete="off" autofocus>
     </form>
 
-    <hr>
+  </div>
 
-    <div id="app">
-      <span class='text-info'>[[ message ]]</span>
-      <hr>
-      [[ session_wakeup ]]
-      <hr>
-      <div v-for="(value, key) in match_data">
-        [[ key ]] : [[ value ]]
+  <div id="leaderboard_app">
+    <div id="leaderboard" class="panel panel-default">
+      <div class="panel-heading">
+        <h1 class="panel-title">[[ account_name ]] Leaderboard</h1>
+      </div>
+      <div id="ranking-content" class="panel-body">
+        <table id="rankings" class="table table-condensed text-center">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Photo</th>
+              <th>Name</th>
+              <th>Points</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template v-for="player in leaderboard_data">
+              <tr>
+                <td class="rank"> [[ player.rank ]]</td>
+                <td class="photo">
+                  <img :src="player.photo" onerror="this.src='/static/img/user.jpeg'" height="35" width="35" />
+                </td>
+                <td class="name">[[ player.fname ]]</td>
+                <td class="elo"> [[ player.elo ]]</td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
 
-<script src="../static/js/vendor/vue.js"></script>
-<script src="../static/js/input.js" type="text/javascript"></script>
+
+  <script src="../static/js/vendor/vue.js"></script>
+  <script src="../static/js/input.js" type="text/javascript"></script>
 
 </body>
 

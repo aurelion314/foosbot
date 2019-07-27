@@ -1,6 +1,18 @@
 import foosbot.database as database
 from dateutil import parser
 
+#This gets leaderboard data for the pi-based leaderboard. Note that the website leaderboard is loaded in views.py and rendered in template
+def get_leaderboard(data, account_id):
+    db = database.builder('foosbot')
+    users = db.table('users').where('account_id', account_id).where_null('deleted_at').order_by('elo', 'desc').limit(10).get()
+    data = []
+    for i,user in enumerate(users):
+        user['rank'] = i+1
+        user['elo'] = int(user['elo'])
+        data.append(user)
+
+    return {'status': 'success', 'leaderboard_data':data}
+
 #return match history and player details
 def get_details(account_id, player_id):
     db = database.builder('foosbot')

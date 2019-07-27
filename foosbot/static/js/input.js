@@ -4,8 +4,9 @@ audio_base_url = '/static/audio/'
 audio_url = audio_base_url + account_id + '.mp3'
 
 data = {
+  account_name: '',  
   session_wakeup: 60,
-  message: '',
+  message: 'Started',
   match_data: {
     status: 'idle',
     timeout: -1,
@@ -16,13 +17,23 @@ data = {
     player1_games: 0,
     player2_games: 0,
     updated_at: '',
-  }
+  },
+  leaderboard_data: [
+    // {rank:1, fname: 'Player1', elo: 1501, photo: 'http://127.0.0.1:8000/static/img/user.jpeg'},
+  ]
 }
 
 // The object is added to a Vue instance
-var vm = new
+var vm_status = new
   Vue({
-    el: '#app',
+    el: '#status_app',
+    delimiters: ['[[', ']]'],
+    data: data
+  })
+
+var vm_leaderboard = new
+  Vue({
+    el: '#leaderboard_app',
     delimiters: ['[[', ']]'],
     data: data
   })
@@ -161,6 +172,7 @@ $(document).ready(function () {
       slackMessage += ' (' + (parseInt(player['wins_today']) + 1) + ' out of ' + (parseInt(player['games_today']) + 1) + ' today)'
       playAudio('' + player['name'] + ' Wins!', epicFollowup)
       updateSlack(slackMessage)
+      refreshLeaderboard()
       return true;
     });
   }
@@ -261,6 +273,18 @@ $(document).ready(function () {
 
     return false;
 
-
   });
+
+  function refreshLeaderboard(){
+    postval = {action: 'leaderboard'}
+    $.post(handler_url, postval, function (response) {
+      response = JSON.parse(response)
+      if (response.leaderboard_data){
+        data.leaderboard_data = response.leaderboard_data
+      }
+    });
+  }
+
+  refreshLeaderboard()
+
 });
