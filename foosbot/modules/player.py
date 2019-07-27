@@ -7,7 +7,7 @@ def create_player(player):
     players = db.table('users').where('account_id', player['account_id']).where_null('deleted_at').where_not_null('elo').get()
     
     #is this the first player?
-    if not players:
+    if not players or len(players) < 2:
         player['elo'] = 1500    
         db.table('users').insert(player)
         return True
