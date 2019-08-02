@@ -6,9 +6,9 @@ audio_url = audio_base_url + account_id + '.mp3'
 data = {
   account_name: '',  
   session_wakeup: 60,
-  message: 'Started',
+  message: 'Waiting',
   match_data: {
-    status: 'idle',
+    status: '',
     timeout: -1,
     player1: '',
     player2: '',
@@ -86,8 +86,8 @@ $(document).ready(function () {
       data.match_data.player1_games = player['games_today']
       data.match_data.player1_rank = player['points']
       data.match_data.player1_name = player['name']
-      data.match_data.status = 'waiting for player 2'
-      data.message = 'Player 1 set'
+      data.match_data.status = player['name'] + ' vs  ..'
+      data.message = 'Player 1 set. Waiting for player 2'
       data.match_data.updated_at = date
       if (data.match_data.timeout < 15) { data.match_data.timeout = 15 }
       return true
@@ -110,7 +110,7 @@ $(document).ready(function () {
         data.match_data.player2_games = player['games_today']
         data.match_data.player2_rank = player['points']
         data.match_data.player2_name = player['name']
-        data.match_data.status = 'in_progress'
+        data.match_data.status = data.match_data.player1_name + ' vs ' + data.match_data.player2_name
         data.message = 'Match started';
         data.match_data.updated_at = date //.toISOString().substring(0, 10) + '  ' + date.toISOString().substring(11, 19)
 
@@ -163,6 +163,7 @@ $(document).ready(function () {
       var epicFollowup = ''
       var slackMessage = player['name'] + ' was Victorious!'
       clearPlayers();
+      data.match_data.status = player['name'] + ' Won '+response.points+' Points!'
       data.message = 'Match complete'
       data.match_data.updated_at = date
       if (response['streak'] > 2) { epicFollowup = 'rampage'; slackMessage = player['name'] + ' is on a Rampage!'; }
@@ -216,8 +217,8 @@ $(document).ready(function () {
     data.match_data.player2_rank = 0
     data.match_data.player1_name = ''
     data.match_data.player2_name = ''
-    data.match_data.status = 'idle'
     data.match_data.timeout = -1
+    data.match_data.status = ''
     data.match_data.mode = 'SINGLES MODE'
   }
 
@@ -238,6 +239,7 @@ $(document).ready(function () {
     //If only player1 is entered, reset
     if (data.match_data.player2 == '') {
       clearPlayers();
+      data.match_data.status = ''
       data.message = 'Timeout'
       playAudio('Timeout waiting for player 2.')
       return false

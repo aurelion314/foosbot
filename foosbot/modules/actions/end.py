@@ -43,7 +43,7 @@ def end(data, account_id):
     db.table('users').where('id', loser['id']).update({'elo': loser['elo'] - elo_lost}) #'points':loser['points'] - points_lost
 
     #return results
-    return {'status': 'success', 'streak':streak}
+    return {'status': 'success', 'streak':streak, 'points':int(elo_change)}
 
 #We want them to be the same after a while, so even them out here.
 def get_points_change(winner, loser, elo_won, elo_lost):
