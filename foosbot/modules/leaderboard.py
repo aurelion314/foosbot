@@ -7,6 +7,9 @@ def get_leaderboard(data, account_id):
     users = db.table('users').where('account_id', account_id).where_null('deleted_at').order_by('elo', 'desc').limit(10).get()
     data = []
     for i,user in enumerate(users):
+        has_games = db.table('matches').where('player1', user['id']).or_where('player2', user['id']).exists()
+        if not has_games:
+            continue
         user['rank'] = i+1
         user['elo'] = int(user['elo'])
         data.append(user)
