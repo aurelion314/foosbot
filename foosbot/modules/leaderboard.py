@@ -12,7 +12,7 @@ def get_leaderboard(data, account_id):
         if not has_games:
             continue
         #add rank
-        user['rank'] = i+1
+        user['rank'] = len(data)+1
         user['elo'] = int(user['elo'])
         data.append(user)
         #Limit 20 results
