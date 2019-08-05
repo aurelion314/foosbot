@@ -14,7 +14,7 @@ def end(data, account_id):
     loser = db.table('users').where('id', loser).first()
 
     #ensure there is a match in progress
-    res = db.table('matches').where('account_id', account_id).where('player1', data['player1']).where('player2', data['player2']).where('status', 'in_progress').first()
+    res = db.table('matches').where('account_id', account_id).where('player1', data['player1']).where('player2', data['player2']).where('status', 'in_progress').lock_for_update().first()
     if not res: return {'status': 'no match found'}
 
     #find winning player streak

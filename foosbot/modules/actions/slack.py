@@ -6,6 +6,8 @@ def slack(data, account_id):
     account = db.table('accounts').where('id', account_id).first()
     url = account['slack_url']
 
+    if not url: return {'status':'failed','result':'Slack not configured for this account'}
+
     message = data['message']
 
     data = {
