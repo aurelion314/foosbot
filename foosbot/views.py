@@ -2,6 +2,8 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.clickjacking import xframe_options_exempt
+
 from json import dumps, loads
 from datetime import datetime
 
@@ -11,6 +13,7 @@ def input(request, account_id):
     if request.session.get('account_id') != account_id: raise PermissionDenied
     return render(request, 'foosbot/input.html', context={'account_id':account_id})
 
+@xframe_options_exempt
 def leaderboard(request, account_id):
     if not request.user.is_authenticated or request.user.account != account_id: raise PermissionDenied
     db = database.builder('foosbot')
@@ -19,6 +22,7 @@ def leaderboard(request, account_id):
     #redirect to the token based leaderboard to keep render logic in one place
     return redirect(leaderboard_token, token=account['token'])
 
+@xframe_options_exempt
 def leaderboard_token(request, token):
     db = database.builder('foosbot')
     account = db.table('accounts').where('token', token).first()
@@ -152,6 +156,7 @@ def login(request):
         return HttpResponse(dumps({'status':'User not found'}))
 
 @csrf_exempt
+@xframe_options_exempt
 def leaderboard_details(request, account_id):
     from foosbot.modules.leaderboard import get_details
     r = request.POST
