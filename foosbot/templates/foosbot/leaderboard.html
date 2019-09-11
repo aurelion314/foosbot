@@ -1,4 +1,5 @@
-{% extends 'foosbot/base.html' %}
+{% extends user.is_authenticated|yesno:"foosbot/base.html,foosbot/blank.html" %}
+
 
 {% block body %}
 

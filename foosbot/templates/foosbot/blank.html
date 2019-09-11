@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script> 
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+<style>
+  /* body {
+    padding-top: 70px;
+  } */
+  @media (max-width: 979px) {
+    body {
+      padding-top: 0px;
+    }
+  }
+  #content {
+    width: 80%  ;
+    margin: 0 auto;
+  }
+  .navbar-inverse, .navbar-toggle, .navbar-toggle:hover{
+    background-color: #487075;
+    border-color: #487075!important;
+  }
+  .navbar-inverse .navbar-brand, .navbar-inverse .navbar-nav>li>a {
+    color: #ffffff;
+  }
+  [v-cloak] { 
+    display: none 
+  }
+
+</style>
+
+<body>
+
+  <div id = 'content'>
+
+    {% block body %}
+    {% endblock %}
+
+    {% if body %}
+    {{ body }}
+    {% endif %}
+  
+  </div>
+</body>
+
+</html>

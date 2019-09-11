@@ -1,6 +1,8 @@
 import foosbot.database as database
 from datetime import datetime, timedelta
 
+MAX_POINTS_GAIN = 40
+
 def end(data, account_id):
     db = database.builder('foosbot')    
 
@@ -50,8 +52,8 @@ def get_points_change(winner, loser, elo_won, elo_lost):
     #Winning. If elo is higher, gain extra points up to max of 50
     if winner['elo'] > winner['points']:
         points_missing = winner['elo'] - winner['points']
-        if points_missing + elo_won > 50:
-            points_won = 50
+        if points_missing + elo_won > MAX_POINTS_GAIN:
+            points_won = MAX_POINTS_GAIN
         else:
             points_won = points_missing + elo_won
     else:
@@ -69,8 +71,8 @@ def get_points_change(winner, loser, elo_won, elo_lost):
     elif loser['points'] > loser['elo']:
         #points too high. lose extra
         points_surplus = loser['points'] - loser['elo']
-        if points_surplus + elo_lost > 50:
-            points_lost = 50
+        if points_surplus + elo_lost > MAX_POINTS_GAIN:
+            points_lost = MAX_POINTS_GAIN
         else:
             points_lost = elo_lost + points_surplus
     else:
@@ -94,7 +96,7 @@ def get_real_elo_change(elo_change):
     return [elo_change, elo_change]
 
 def calculate_elo_change(elo1, elo2):
-    max_change = 50 
+    max_change = MAX_POINTS_GAIN 
     win_probability = calculate_win_probability(elo1, elo2)
     return (max_change*(1-win_probability))
 
