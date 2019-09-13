@@ -58,7 +58,7 @@ def get_details(account_id, player_id):
 
     data = {
         'player':player, 
-        'matches':matches, 
+        'matches':matches[:25], 
         'total_played': len(matches), 
         'total_won': won, 
         'longest_streak': longest_streak,
