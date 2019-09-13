@@ -6,9 +6,18 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
 <style>
-  /* body {
-    padding-top: 70px;
-  } */
+  body {
+    /* padding-top: 70px; */
+    font-size: 2vw;
+  }
+
+  img.photo {
+    height:7vh;
+    width:7vh;
+    border-radius: 50%;
+  }
+
+  h1.panel-title { font-size: 150%; }
 
   @media (max-width: 979px) {
     body {
@@ -98,7 +107,7 @@
               <tr>
                 <td class="rank"> [[ player.rank ]]</td>
                 <td class="photo">
-                  <img :src="player.photo" onerror="this.src='/static/img/user.jpeg'" height="35" width="35" />
+                  <img class='photo' :src="player.photo" onerror="this.src='/static/img/user.jpeg'" />
                 </td>
                 <td class="name">[[ player.fname ]]</td>
                 <td class="elo"> [[ player.elo ]]</td>
