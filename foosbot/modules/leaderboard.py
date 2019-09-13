@@ -30,17 +30,19 @@ def get_details(account_id, player_id):
         db.query().where('player1', player['id']).or_where('player2', player['id'])
     )\
     .where('status', 'complete')\
-    .order_by('created_at', 'desc').limit(25).get()
+    .order_by('created_at', 'desc').get()
 
     #add names for displaying
     pname = PlayerName()
     longest_streak = 0
     streak = 0
+    won = 0
     for match in matches:
         player2 = match.player1 if match.player1 != player['id'] else match.player2
         if match['winner'] == player['id']:
             match['winner_name'] = player['fname']
             match['loser_name'] = pname.getName(player2)
+            won += 1
             streak += 1
         else:
             match['winner_name'] = pname.getName(player2)
@@ -58,7 +60,7 @@ def get_details(account_id, player_id):
         'player':player, 
         'matches':matches, 
         'total_played': len(matches), 
-        'total_won': len([m for m in matches if m['winner']==player['id']]), 
+        'total_won': won, 
         'longest_streak': longest_streak,
         'account_id':account_id
     }
