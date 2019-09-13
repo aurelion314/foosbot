@@ -4,7 +4,7 @@ from dateutil import parser
 #This gets leaderboard data for the pi-based leaderboard. Note that the website leaderboard is loaded in views.py and rendered in template
 def get_leaderboard(data, account_id):
     db = database.builder('foosbot')
-    users = db.table('users').where('account_id', account_id).where_null('deleted_at').order_by('elo', 'desc').limit(100).get()
+    users = db.table('users').select('id', 'fname', 'lname', 'elo', 'photo').where('account_id', account_id).where_null('deleted_at').order_by('elo', 'desc').limit(100).get()
     data = []
     for i,user in enumerate(users):
         #only show players who have played a game
