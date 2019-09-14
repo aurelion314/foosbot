@@ -8,7 +8,7 @@
 <style>
   body {
     /* padding-top: 70px; */
-    font-size: 2vw;
+    font-size: 1.75vw;
   }
 
   img.photo {
@@ -17,7 +17,8 @@
     border-radius: 50%;
   }
 
-  h1.panel-title { font-size: 150%; }
+  h1.panel-title { font-size: 120%; }
+  h3.status-text { font-size: 130%; }
 
   @media (max-width: 979px) {
     body {
@@ -67,7 +68,7 @@
   <div class='container' style='padding-top:70px; width: 50%'>
 
     <div id="status_app" style="text-align: center">
-      <h3 style="color:#487075"> [[ match_data.status ]]</h3>
+      <h3 style="color:#487075" class="status-text"> [[ match_data.status ]]</h3>
       <!-- Info: -->
       <span class='text-info'> [[ message ]] </span>
       <br>
