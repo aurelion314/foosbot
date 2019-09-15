@@ -7,6 +7,7 @@ $(document).ready(function () {
         $('#player_lname').val(row.find('.lname').html())
         $('#player_photo').val(row.find('.photo').attr('src'))
         $('#player_rfid').val(parseInt(row.find('.rfid').html()))
+        $('#modal_message').html('')
        
         $('#player_modal').modal('show');
     });
@@ -31,6 +32,7 @@ $(document).ready(function () {
         $('#player_lname').val('')
         $('#player_photo').val('')
         $('#player_rfid').val('')
+        $('#modal_message').html('')
     });
 
     data = {

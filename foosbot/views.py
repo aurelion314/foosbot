@@ -96,7 +96,8 @@ def player(request, account_id):
         
             #First make sure this rfid isn't taken.
             if player['rfid']:
-                taken = db.table('users').where('account_id', account_id).where('rfid', player['rfid']).exists()
+                player_id = [player.get('id')]
+                taken = db.table('users').where('account_id', account_id).where('rfid', player['rfid']).where_not_in('id', player_id).exists()
                 if taken:
                     return HttpResponse(dumps({'status':'rfid taken or invalid'}))
 

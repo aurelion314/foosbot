@@ -21,5 +21,8 @@ def create_player(player):
     #start the player at one stdev below the average elo. 
     player['elo'] = mean - std
 
+    #strip RFID in case there are spaces
+    player['rfid'] = str(player['rfid']).strip()
+
     #save
     db.table('users').insert(player)

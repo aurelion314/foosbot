@@ -158,6 +158,7 @@ $(document).ready(function () {
       response = JSON.parse(response)
       if (response.status != 'success') {
         data.message = 'Match completion failed: ' + response.status;
+        clearPlayers()
         return;
       }
       var epicFollowup = ''
