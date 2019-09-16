@@ -51,8 +51,6 @@ def slack(request):
     data['client_secret'] = 'd91d4794d106de4db1957c2f274346ae'
     # data['redirect_uri'] = 'https://www.employeearcade.com/slack/'
     
-    print(data)
-
     import requests
     res = requests.get('https://slack.com/api/oauth.access', data)
     res = res.json()
@@ -62,11 +60,14 @@ def slack(request):
     slack_url = res['incoming_webhook']['url']
     slack_channel = res['incoming_webhook']['channel']
     slack_config_url = res['incoming_webhook']['configuration_url']
+    slack_token = res['access_token']
 
     #Add config url and channel name somewhere. Accounts table or new slack table
 
     db = database.builder('foosbot')
     db.table('accounts').where('id', account_id).update({'slack_url':slack_url, 'slack_config_url': slack_config_url, 'slack_channel': slack_channel})
+    db.table('slack_connections').where('account_id', account_id).delete()
+    db.table('slack_connections').insert({'account_id':account_id, 'channel':slack_channel, 'token':slack_token, 'config_url': slack_config_url})
 
     #return custom page with link to setup, or redirect to setup
     return redirect(setup, account_id=int(account_id))

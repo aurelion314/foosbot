@@ -1,5 +1,6 @@
 import foosbot.database as database
 from datetime import datetime, timedelta
+from foosbot.modules.slack import Slack
 
 MAX_POINTS_GAIN = 40
 
@@ -16,8 +17,8 @@ def end(data, account_id):
     loser = db.table('users').where('id', loser).first()
 
     #ensure there is a match in progress
-    res = db.table('matches').where('account_id', account_id).where('player1', data['player1']).where('player2', data['player2']).where('status', 'in_progress').lock_for_update().first()
-    if not res: return {'status': 'no match found'}
+    match = db.table('matches').select('id').where('account_id', account_id).where('player1', data['player1']).where('player2', data['player2']).where('status', 'in_progress').lock_for_update().first()
+    if not match: return {'status': 'no match found'}
 
     #find winning player streak
     streak = 1
@@ -38,11 +39,14 @@ def end(data, account_id):
     # print(elo_change, elo_won, elo_lost, points_won, points_lost)
 
     #update the match
-    res = db.table('matches').where('player1', data['player1']).where('player2', data['player2']).where('status', 'in_progress') \
+    db.table('matches').where('player1', data['player1']).where('player2', data['player2']).where('status', 'in_progress') \
         .update({'status': 'complete', 'winner':data['winner'], 'updated_at':str(datetime.now()), 'points': elo_change})
 
     db.table('users').where('id', winner['id']).update({'elo': winner['elo'] + elo_won}) #'points':winner['points'] + points_won
     db.table('users').where('id', loser['id']).update({'elo': loser['elo'] - elo_lost}) #'points':loser['points'] - points_lost
+
+    #update slack if applicable
+    Slack.end_match(match['id'], winner, loser, streak, int(elo_change))
 
     #return results
     return {'status': 'success', 'streak':streak, 'points':int(elo_change)}
