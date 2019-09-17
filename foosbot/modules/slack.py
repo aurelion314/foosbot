@@ -61,6 +61,7 @@ class Slack:
             {"text": win_message, "color": "good"},
         ])
 
+        print('updating slack', data)
         r = Slack.updateMessage(slack_connection, data)
 
     def clear_match(match):
