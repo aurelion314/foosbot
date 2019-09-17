@@ -36,8 +36,10 @@ def setup(request, account_id):
     if request.user.account != account_id: raise PermissionDenied
     db = database.builder('foosbot')
     account = db.table('accounts').where('id', request.user.account).first()
+    slack_connection = db.table('slack_connections').where('account_id', account_id).first()
+    slack_connection = dict(slack_connection) if slack_connection else {}
     if account:
-        return render(request, 'foosbot/setup.html', context={'account_name': account.name, 'account_id':account_id, 'slack_url': account.slack_url, 'slack_config_url':account.slack_config_url, 'slack_channel': account.slack_channel})
+        return render(request, 'foosbot/setup.html', context={'account_name': account.name, 'account_id':account_id, 'slack_config_url':slack_connection.get('config_url'), 'slack_channel': slack_connection.get('channel')})
     else:
         return HttpResponseNotFound()
 
@@ -57,17 +59,24 @@ def slack(request):
 
     print(res)
     account_id = request.user.account
-    slack_url = res['incoming_webhook']['url']
-    slack_channel = res['incoming_webhook']['channel']
-    slack_config_url = res['incoming_webhook']['configuration_url']
-    slack_token = res['access_token']
 
-    #Add config url and channel name somewhere. Accounts table or new slack table
+    slack_connection = {} 
+    slack_connection['account_id'] = account_id
+    slack_connection['channel'] = res['incoming_webhook']['channel']
+    slack_connection['channel_id'] = res['incoming_webhook']['channel_id']
+    slack_connection['url'] = res['incoming_webhook']['url']
+    slack_connection['config_url'] = res['incoming_webhook']['configuration_url']
+    slack_connection['token'] = res['access_token']
+    slack_connection['scope'] = res.get('scope')
+    slack_connection['team_name'] = res.get('team_name')
 
     db = database.builder('foosbot')
-    db.table('accounts').where('id', account_id).update({'slack_url':slack_url, 'slack_config_url': slack_config_url, 'slack_channel': slack_channel})
+    #This is the old way of saving webhook.
+    # db.table('accounts').where('id', account_id).update({'slack_url':slack_url, 'slack_config_url': slack_config_url, 'slack_channel': slack_channel})
+    
+    #save slack connection
     db.table('slack_connections').where('account_id', account_id).delete()
-    db.table('slack_connections').insert({'account_id':account_id, 'channel':slack_channel, 'token':slack_token, 'config_url': slack_config_url})
+    db.table('slack_connections').insert(slack_connection)
 
     #return custom page with link to setup, or redirect to setup
     return redirect(setup, account_id=int(account_id))
