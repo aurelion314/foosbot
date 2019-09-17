@@ -80,6 +80,7 @@ def remove_slack(request, account_id):
     db = database.builder('foosbot')
 
     db.table('accounts').where('id', account_id).update({'slack_url':None, 'slack_config_url': None, 'slack_channel': None})
+    db.table('slack_connections').where('account_id', account_id).delete()
     return HttpResponse(dumps({'status':'success'}))
 
 @csrf_exempt

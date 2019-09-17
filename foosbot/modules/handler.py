@@ -55,8 +55,11 @@ class Handler():
             )
 
         # sending the following will force a page reload.
-        # return {'status':'success', 'result':'reload'}
-
+        needs_reload = db.table('accounts').where('id', self.account_id).where('refresh_reader', 1).exists()
+        if needs_reload: 
+            db.table('accounts').where('id', self.account_id).update({'refresh_reader': 0})
+            return {'status':'success', 'result':'reload'}
+            
         return {'status':'success'}
 
     def get_client_ip(self,request):

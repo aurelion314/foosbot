@@ -42,10 +42,13 @@ class Slack:
         db = database.builder("foosbot")
         slack_record = db.table("slack_records").where("match", match_id).first()
         if not slack_record:
+            print('no slack record for match', match_id)
             return False
         
         slack_connection = db.table('slack_connections').where('id', slack_record['slack_connection']).first()
-        if not slack_connection: return False#In case they remove the connection mid match, don't throw an error.
+        if not slack_connection:
+            print('no slack connection for match', match_id, 'connection', slack_record['slack_connection'])
+            return False#In case they remove the connection mid match, don't throw an error.
 
         win_message = winner['fname'] + " Won! (+"+str(points)+" points)"
         if streak > 1:
@@ -96,24 +99,21 @@ class Slack:
 
 
 if __name__ == "__main__":
-    match = {
-        'account_id': 1,
-        'player1': data['player1'],
-        'player2': data['player2'],
-        'status': 'in_progress',
-        'created_at': str(datetime.now()),
+
+    data = {
+        "token": "xoxp-53894058610-138924041447-747388542819-67b1b44912fb9d48d615b68e8618b3de",
+        "channel": "#foosball_results",
+        "text": "Mike vs Mike",
+        "attachments": json.dumps(
+            [{"text": "Match Started! ", "color": "warning"}]
+        ),
     }
+    url = 'https://slack.com/api/chat.postMessage'
 
+    r = Slack.call(url, data)
+    print(r.content)
 
-    # data = {
-    #     "token": "xoxp-624952400887-624952401303-620284124833-7146085e8873b92cea0c5f51cf6fa5ed",
-    #     "channel": "#foosbot",
-    #     "text": "Sewon (#1) vs Mike (#4)",
-    #     "attachments": json.dumps(
-    #         [{"text": "Match Started! ", "color": "warning"}]
-    #     ),
-    # }
-    # url = base+'chat.update'
+    
     # data = {
     #     "token": "xoxp-624952400887-624952401303-620284124833-7146085e8873b92cea0c5f51cf6fa5ed",
     #     'channel':'CJD8FA1N2',

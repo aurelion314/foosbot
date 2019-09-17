@@ -224,6 +224,7 @@ $(document).ready(function () {
   }
 
   function updateSlack(data) {
+    return;//This is no longer needed. Handled on back end
     var postval = {}
     postval.action = 'slack';
     postval.message = data;

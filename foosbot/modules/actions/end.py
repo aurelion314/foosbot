@@ -33,7 +33,7 @@ def end(data, account_id):
     
     #calculate the ELO change
     elo_change = calculate_elo_change(winner['elo'], loser['elo'])
-    elo_won, elo_lost = get_real_elo_change(elo_change)
+    elo_won, elo_lost = get_real_elo_change(elo_change, account_id)
     # points_won, points_lost = get_points_change(winner, loser, elo_won, elo_lost)
 
     # print(elo_change, elo_won, elo_lost, points_won, points_lost)
@@ -86,11 +86,11 @@ def get_points_change(winner, loser, elo_won, elo_lost):
 
 
 #Alter the real change in Elo to keep the average elo near 1500
-def get_real_elo_change(elo_change):
+def get_real_elo_change(elo_change, account_id):
     if elo_change < 5: return [elo_change, elo_change]
     db = database.builder('foosbot') 
 
-    elo_average = db.table('users').where_null('deleted_at').select(db.raw('avg(elo) as average_elo')).first()['average_elo']
+    elo_average = db.table('users').where('account_id', account_id).where_null('deleted_at').select(db.raw('avg(elo) as average_elo')).first()['average_elo']
     print('elo average', elo_average)
     if elo_average >1525:
         return [elo_change-1, elo_change+1] #win less, lose more
