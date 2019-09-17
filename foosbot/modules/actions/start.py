@@ -21,7 +21,10 @@ def start(data, account_id):
 
     #return results
     if res:
-        Slack.new_match(match)
+        try: 
+            Slack.new_match(match)
+        except Exception as e:
+            print (e)
         return {'status': 'success'}
     else:
         return {'status': 'failed'}
