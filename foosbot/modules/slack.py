@@ -50,16 +50,16 @@ class Slack:
             print('no slack connection for match', match_id, 'connection', slack_record['slack_connection'])
             return False#In case they remove the connection mid match, don't throw an error.
 
-        win_message = winner['fname'] + " Won! (+"+str(points)+" points)"
+        win_message = winner['fname'] + " was Victorious! (+"+str(points)+" points)"
         if streak > 1:
             win_message += " - That's "+str(streak)+" in a row!"
         
         data = json.loads(slack_record["data"])
         data['ts'] = slack_record['timestamp']
         data["attachments"] = json.dumps([
-            {"text": "Match Complete!", "color": "good"},
             {"text": win_message, "color": "good"},
         ])
+            # {"text": "Match Complete!", "color": "good"},
 
         print('updating slack', data)
         r = Slack.updateMessage(slack_connection, data)
