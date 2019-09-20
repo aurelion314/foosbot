@@ -2,6 +2,7 @@ import requests, json
 import foosbot.database as database
 
 def slack(data, account_id):
+    return {'status':'failed', 'result':'This method of slack notification is depreciated.'}
     db = database.builder('foosbot')    
     account = db.table('accounts').where('id', account_id).first()
     url = account['slack_url']
