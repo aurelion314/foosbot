@@ -5,45 +5,11 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
-<style>
-  body {
-    /* padding-top: 70px; */
-    font-size: 1.75vw;
-  }
-
-  img.photo {
-    height:7vh;
-    width:7vh;
-    border-radius: 50%;
-  }
-
-  h1.panel-title { font-size: 120%; }
-  h3.status-text { font-size: 130%; }
-
-  @media (max-width: 979px) {
-    body {
-      padding-top: 0px;
-    }
-  }
-
-  .container {
-    width: 400px;
-    margin: 0 auto;
-  }
-
-  .navbar-inverse {
-    background-color: #487075;
-    border-color: white;
-  }
-
-  .navbar-inverse .navbar-nav>li>a {
-    color: #ffffff;
-  }
-
-  .table th {
-   text-align: center;   
-}
-</style>
+{% if theme and theme == 'dark' %}
+<link rel="stylesheet" href="/static/css/input_dark.css">
+{% else %}
+<link rel="stylesheet" href="/static/css/input.css">
+{% endif %}
 
 <script>
   account_id = {{ account_id }}
@@ -72,7 +38,7 @@
       <!-- Info: -->
       <span class='text-info'> [[ message ]] </span>
       <br>
-      Timeout:
+      Time Remaining:
       <span class='text-info'> [[ match_data.timeout ]] </span>
       <!-- 
         [[ session_wakeup ]]
@@ -83,7 +49,7 @@
     </div>
 
     <form>
-      <input type='text' id='input' style="color:white; border: 0; outline: none" autocomplete="off" autofocus>
+      <input type='text' id='input' style="border: 0; outline: none" autocomplete="off" autofocus>
     </form>
 
   </div>

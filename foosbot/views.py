@@ -11,7 +11,9 @@ import foosbot.database as database
 
 def input(request, account_id):
     if request.session.get('account_id') != account_id: raise PermissionDenied
-    return render(request, 'foosbot/input.html', context={'account_id':account_id})
+    theme = 'dark'
+    # theme = 'light'
+    return render(request, 'foosbot/input.html', context={'account_id':account_id, 'theme':theme})
 
 @xframe_options_exempt
 def leaderboard(request, account_id):
@@ -212,4 +214,6 @@ def handler(request, account_id):
 
     hand = Handler(request, account_id)
     response = hand.handle(request)
+    # if isinstance(response, ResponseThen):
+    #     return response
     return HttpResponse(dumps(response)) if response else HttpResponseBadRequest()

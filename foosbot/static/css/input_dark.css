@@ -1,0 +1,84 @@
+html body {
+  /* padding-top: 70px; */
+  font-size: 1.75vw;
+  background-color: #222!important;
+}
+
+* {
+  color: #999999;
+}
+table#rankings td > * {
+  color: #999999;
+}
+
+#rankings td .btn-default {
+  color: black;
+}
+
+#rankings td.elo {
+  font-size: 1.5em;
+  font-weight: 600;
+}
+
+.text-info {
+  color: #ffffff;
+}
+​
+#leaderboard_app #leaderboard.panel-default {
+  background-color: #262125;
+}
+
+#ranking-content {
+  background-color: #222;
+}
+
+img.photo {
+  height:7vh;
+  width:7vh;
+  border-radius: 50%;
+}
+
+.panel-heading {
+  background-color: #222!important;
+}
+
+.panel-title {
+  color: #222;
+}
+
+.panel{
+  border: 0px;
+}
+​
+h1.panel-title { font-size: 120%; }
+
+h3.status-text { font-size: 130%; }
+
+@media (max-width: 979px) {
+  body {
+    padding-top: 0px;
+  }
+}
+​
+.container {
+  width: 400px;
+  margin: 0 auto;
+}
+​
+.navbar-inverse {
+  background-color: #487075;
+  border-color: #737272;
+}
+​
+.navbar-inverse .navbar-nav>li>a {
+  color: #ffffff;
+}
+​
+.table th {
+ text-align: center;   
+}
+
+form input {
+  color:#222;
+  background-color: #222;
+}

@@ -1,0 +1,41 @@
+body {
+    /* padding-top: 70px; */
+    font-size: 1.75vw;
+  }
+
+  img.photo {
+    height:7vh;
+    width:7vh;
+    border-radius: 50%;
+  }
+
+  h1.panel-title { font-size: 120%; }
+  h3.status-text { font-size: 130%; }
+
+  @media (max-width: 979px) {
+    body {
+      padding-top: 0px;
+    }
+  }
+
+  .container {
+    width: 400px;
+    margin: 0 auto;
+  }
+
+  .navbar-inverse {
+    background-color: #487075;
+    border-color: white;
+  }
+
+  .navbar-inverse .navbar-nav>li>a {
+    color: #ffffff;
+  }
+
+  .table th {
+   text-align: center;   
+}
+
+form input {
+    color:white;
+  }
