@@ -30,13 +30,21 @@ def end(data, account_id):
     for game in games:
         if game['winner'] != winner['id']: break
         streak += 1
+
+    #check if winner is unranked
+    if not winner['elo'] and not loser['elo']:
+        winner['elo'] = 1500
+        loser['elo'] = 1500
+    elif not winner['elo']:
+        winner['elo'] = initialize_elo(winner, loser['elo'], True)
+    elif not loser['elo']:
+        loser['elo'] = initialize_elo(loser, winner['elo'], False)
+
     
     #calculate the ELO change
     elo_change = calculate_elo_change(winner['elo'], loser['elo'])
     elo_won, elo_lost = get_real_elo_change(elo_change, account_id)
     # points_won, points_lost = get_points_change(winner, loser, elo_won, elo_lost)
-
-    # print(elo_change, elo_won, elo_lost, points_won, points_lost)
 
     #update the match
     db.table('matches').where('player1', data['player1']).where('player2', data['player2']).where('status', 'in_progress') \
@@ -50,6 +58,32 @@ def end(data, account_id):
 
     #return results
     return {'status': 'success', 'streak':streak, 'points':int(elo_change)}
+
+def initialize_elo(player, player2_elo, win=True):
+    db = database.builder('foosbot')  
+    players = db.table('users').where('account_id', player['account_id']).where_null('deleted_at').where_not_null('elo').get()
+    
+    #is this the first player?
+    if not players or len(players) < 2:
+        return 1500    
+
+    #do some math
+    import statistics
+    elos = [p['elo'] for p in players]
+    std = statistics.stdev(elos)
+
+    player2_win_prob = calculate_win_probability(player2_elo, 1500)
+    if win:
+        bonus = -0.25 + 0.5*player2_win_prob
+    else:
+        bonus = -0.75 + 0.5*player2_win_prob
+    bonus = bonus*std
+
+    return 1500+bonus
+    
+
+
+
 
 #We want them to be the same after a while, so even them out here.
 def get_points_change(winner, loser, elo_won, elo_lost):

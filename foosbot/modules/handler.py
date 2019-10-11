@@ -32,7 +32,7 @@ class Handler():
             return actions.slack(r, self.account_id)
         if action == 'leaderboard':
             import foosbot.modules.leaderboard as leaderboard
-            return leaderboard.get_leaderboard(r, self.account_id)
+            return leaderboard.get_table_leaderboard(r, self.account_id)
         if action == 'ping':
             return self.ping(request)
 

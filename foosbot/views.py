@@ -30,8 +30,20 @@ def leaderboard_token(request, token):
     account = db.table('accounts').where('token', token).first()
     if not account: return HttpResponseNotFound()
 
-    players = db.table('users').where('account_id', account.id).where_null('deleted_at').order_by('elo', 'desc').get()
+    from foosbot.modules.leaderboard import get_leaderboard
+
+    players = get_leaderboard(account['id'])
     return render(request, 'foosbot/leaderboard.html',context={'players':players, 'account_id':account['id'], 'account_name':account['name']})
+
+@xframe_options_exempt
+def match_history(request, account_id):
+    if not request.user.is_authenticated or request.user.account != account_id: raise PermissionDenied
+    db = database.builder('foosbot')
+    account = db.table('accounts').where('id', account_id).first()
+    if not account: return HttpResponseNotFound()
+    #get matches and which ones are editable
+    matches = db.table('matches').where('account_id', account_id).order_by('id', 'desc').limit(50).get()
+    return render(request, 'foosbot/match_history.html',context={'matches':matches, 'account_id':account['id'], 'account_name':account['name']})
 
 def setup(request, account_id):
     if not request.user.is_authenticated: return redirect(login)

@@ -2,7 +2,7 @@ import foosbot.database as database
 from dateutil import parser
 
 #This gets leaderboard data for the pi-based leaderboard. Note that the website leaderboard is loaded in views.py and rendered in template
-def get_leaderboard(data, account_id):
+def get_table_leaderboard(data, account_id):
     db = database.builder('foosbot')
     users = db.table('users').select('id', 'fname', 'lname', 'elo', 'photo').where('account_id', account_id).where_null('deleted_at').order_by('elo', 'desc').limit(100).get()
     data = []
@@ -20,6 +20,14 @@ def get_leaderboard(data, account_id):
 
     return {'status': 'success', 'leaderboard_data':data}
 
+def get_leaderboard(account_id):
+    db = database.builder('foosbot')
+    players = db.table('users').where('users.account_id', account_id).where_null('deleted_at').order_by('elo', 'desc').get()
+    # players = db.table('users').left_join('player_stats', 'users.id','=', 'player_stats.player_id')\
+    # .select('users.id', 'users.fname', 'users.elo', 'player_stats.matches', 'users.photo')\
+    # .where('users.account_id', account_id).where_null('deleted_at').order_by(db.raw('(matches > 0) desc, elo'), 'desc').get()#).order_by('elo', 'desc').get()
+    return players
+
 #return match history and player details
 def get_details(account_id, player_id):
     db = database.builder('foosbot')
@@ -30,10 +38,11 @@ def get_details(account_id, player_id):
         db.query().where('player1', player['id']).or_where('player2', player['id'])
     )\
     .where('status', 'complete')\
+    .select('player1', 'player2', 'winner', 'points', 'created_at')\
     .order_by('created_at', 'desc').get()
 
     #add names for displaying
-    pname = PlayerName()
+    PName = PlayerName()
     longest_streak = 0
     streak = 0
     won = 0
@@ -41,11 +50,11 @@ def get_details(account_id, player_id):
         player2 = match.player1 if match.player1 != player['id'] else match.player2
         if match['winner'] == player['id']:
             match['winner_name'] = player['fname']
-            match['loser_name'] = pname.getName(player2)
+            match['loser_name'] = PName.getName(player2)
             won += 1
             streak += 1
         else:
-            match['winner_name'] = pname.getName(player2)
+            match['winner_name'] = PName.getName(player2)
             match['loser_name'] = player['fname']
             streak = 0
 

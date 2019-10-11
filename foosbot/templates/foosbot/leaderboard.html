@@ -65,7 +65,13 @@
                                 <img src="{{ player.photo }}" onerror="this.src='/static/img/user.jpeg'" height="35" width="35" />
                         </td>
                         <td class="name">{{ player.fname }}</td>
-                        <td class="elo"> {{ player.elo|floatformat:0 }}</td>
+                        <td class="elo"> 
+                            {% if player.elo %}
+                            {{ player.elo|floatformat:0 }}
+                            {% else %}
+                            <i>unranked</i>
+                            {% endif %}
+                        </td>
                         <td><a href="#" data-toggle="modal" data-target="#details" class="btn-details btn btn-default btn-sm"><i class="glyphicon glyphicon-plus"></i> Details </a></td>
                     </tr>
                     {% endfor %}

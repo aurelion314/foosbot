@@ -10,6 +10,8 @@ def rfid(data, account_id):
     player = db.table('users').where('account_id', account_id).where_null('deleted_at').where('rfid', rfid).first()
     if not player: 
         return {'status':'not found'}
+    if not player['elo']:
+        player['elo'] = 0
 
     games = db.table('matches').where('created_at', '>', str(datetime.now() - timedelta(days=1))).where(
         db.query().where('player1', player['id']).or_where('player2', player['id'])
