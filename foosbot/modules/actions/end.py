@@ -139,4 +139,4 @@ def calculate_elo_change(elo1, elo2):
     return (max_change*(1-win_probability))
 
 def calculate_win_probability(elo1, elo2):
-    return 1/(1+10**((elo2-elo1) / 400))
+    return 1/(1+10**((float(elo2)-float(elo1)) / 400))
