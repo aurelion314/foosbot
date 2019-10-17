@@ -50,8 +50,8 @@ def end(data, account_id):
     db.table('matches').where('player1', data['player1']).where('player2', data['player2']).where('status', 'in_progress') \
         .update({'status': 'complete', 'winner':data['winner'], 'updated_at':str(datetime.now()), 'points': elo_change})
 
-    db.table('users').where('id', winner['id']).update({'elo': winner['elo'] + elo_won}) #'points':winner['points'] + points_won
-    db.table('users').where('id', loser['id']).update({'elo': loser['elo'] - elo_lost}) #'points':loser['points'] - points_lost
+    db.table('users').where('id', winner['id']).update({'elo': float(winner['elo']) + elo_won}) #'points':winner['points'] + points_won
+    db.table('users').where('id', loser['id']).update({'elo': float(loser['elo']) - elo_lost}) #'points':loser['points'] - points_lost
 
     #update slack if applicable
     Slack.end_match(match['id'], winner, loser, streak, int(elo_change))
