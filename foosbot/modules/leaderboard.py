@@ -13,7 +13,7 @@ def get_table_leaderboard(data, account_id):
             continue
         #add rank
         user['rank'] = len(data)+1
-        user['elo'] = int(user['elo'])
+        user['elo'] = int(user['elo']) if user['elo'] else 0
         data.append(user)
         #Limit 20 results
         if len(data) >= 20: break

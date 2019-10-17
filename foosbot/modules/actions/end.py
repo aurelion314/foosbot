@@ -72,7 +72,7 @@ def initialize_elo(player, player2_elo, win=True):
     elos = [p['elo'] for p in players]
     std = statistics.stdev(elos)
 
-    player2_win_prob = calculate_win_probability(player2_elo, 1500)
+    player2_win_prob = float(calculate_win_probability(player2_elo, 1500))
     if win:
         bonus = -0.25 + 0.5*player2_win_prob
     else:
