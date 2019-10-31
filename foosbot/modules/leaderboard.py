@@ -13,7 +13,7 @@ def get_table_leaderboard(data, account_id):
             continue
         #add rank
         user['rank'] = len(data)+1
-        user['elo'] = int(user['elo']) if user['elo'] else 0
+        user['elo'] = int(round(user['elo'])) if user['elo'] else 0
         data.append(user)
         #Limit 20 results
         if len(data) >= 20: break
@@ -70,6 +70,7 @@ def get_details(account_id, player_id):
         'matches':matches[:25], 
         'total_played': len(matches), 
         'total_won': won, 
+        'win_percent': '%.1f%%'%(100*won/len(matches)), 
         'longest_streak': longest_streak,
         'account_id':account_id
     }

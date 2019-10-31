@@ -54,10 +54,10 @@ def end(data, account_id):
     db.table('users').where('id', loser['id']).update({'elo': float(loser['elo']) - elo_lost}) #'points':loser['points'] - points_lost
 
     #update slack if applicable
-    Slack.end_match(match['id'], winner, loser, streak, int(elo_change))
+    Slack.end_match(match['id'], winner, loser, streak, int(round(elo_change)))
 
     #return results
-    return {'status': 'success', 'streak':streak, 'points':int(elo_change)}
+    return {'status': 'success', 'streak':streak, 'points':int(round(elo_change))}
 
 def initialize_elo(player, player2_elo, win=True):
     db = database.builder('foosbot')  
