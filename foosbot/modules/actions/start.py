@@ -1,15 +1,19 @@
 from foosbot.modules.slack import Slack
 
-def start(data, account_id):
+def start(data, account_id, reader_id):
     import foosbot.database as database
     from datetime import datetime, timedelta
     db = database.builder('foosbot')
 
     #New game starting. There should be no in progress games. If there are, set it to failed.
-    db.table('matches').where('account_id', account_id).where('status', 'in_progress').update({'status':'failed', 'updated_at': str(datetime.now())})
+    in_progress_matches = db.table('matches').where('account_id', account_id).where('reader_id', reader_id).where('status', 'in_progress').get()
+    for in_progress_match in in_progress_matches:
+        Slack.end_match(in_progress_match)
+        db.table('matches').where('account_id', account_id).where('status', 'in_progress').where('id', in_progress_match['id']).update({'status':'failed', 'updated_at': str(datetime.now())})
 
     match = {
         'account_id': account_id,
+        'reader_id': reader_id,
         'player1': data['player1'],
         'player2': data['player2'],
         'status': 'in_progress',

@@ -1,34 +1,29 @@
 from django.http import HttpResponse
 import foosbot.database as database
 from datetime import datetime
+import foosbot.modules.actions as actions
 
 class Handler():
-    def __init__(self, request, account_id):
+    def __init__(self, account_id):
         if not account_id: raise Exception('No account_id provided to handler')
         self.account_id = account_id
-        self.request = request
     
     def handle(self, request):
         r = request.POST
         action = r['action']
+        reader_id = request.session['reader_id']
 
         if action == 'rfid':
-            import foosbot.modules.actions as actions
             return actions.rfid(r, self.account_id)
         if action == 'start':
-            import foosbot.modules.actions as actions
-            return actions.start(r, self.account_id)
+            return actions.start(r, self.account_id, reader_id)
         if action == 'end':
-            import foosbot.modules.actions as actions
-            return actions.end(r, self.account_id)
+            return actions.end(r, self.account_id, reader_id)
         if action == 'remove':
-            import foosbot.modules.actions as actions
-            return actions.remove(r, self.account_id)
+            return actions.remove(r, self.account_id, reader_id)
         if action == 'say':
-            import foosbot.modules.actions as actions
             return actions.say(r, self.account_id)
         if action == 'slack':
-            import foosbot.modules.actions as actions
             return actions.slack(r, self.account_id)
         if action == 'leaderboard':
             import foosbot.modules.leaderboard as leaderboard
@@ -47,12 +42,15 @@ class Handler():
         # print(client_data)
         #insert ping row with time, account_id, and ping data.
         db = database.builder('foosbot')
-        db.table('ping').insert({
-            'account_id':self.account_id, 
-            'ip':self.get_client_ip(request), 
-            'created_at':str(datetime.now()), 
-            'meta_data':str(client_data)}
-            )
+
+        insert_data = {}
+        insert_data['account_id'] = self.account_id
+        insert_data['reader_id'] = request.session['reader_id']
+        insert_data['ip'] = self.get_client_ip(request)
+        insert_data['created_at'] = str(datetime.now())
+        insert_data['meta_data'] = str(client_data)
+        
+        db.table('ping').insert(insert_data)
 
         # sending the following will force a page reload.
         needs_reload = db.table('accounts').where('id', self.account_id).where('refresh_reader', 1).exists()

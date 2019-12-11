@@ -192,30 +192,27 @@ def leaderboard_details(request, account_id):
     
     return render(request, 'foosbot/details.html',context=data)
 
-def verify_token(request, account_id=None):
+def verify_token(request, request_account_id=None):
     r = request.GET
     token = r.get('token')
 
     db = database.builder('foosbot')
     
-    #Authentication can be with reader token or with account_id and account token (old version)
-    if account_id:
-        account = db.table('accounts').where('id', account_id).first()
-        if not account: return HttpResponse('Client not found: '+str(account_id))
-        if account['token'] != token: return HttpResponse('Invalid Token')
-    else:
-        reader = db.table('readers').where('token', token).first()
-        if not reader: return HttpResponse('Reader not configured: '+str(token))
-        account = db.table('accounts').where('id', reader['account']).first()
-        if not account: return HttpResponse('Reader not assigned: '+str(token))
-        account_id = account['id']
+    #Authentication reader by its token
+    reader = db.table('readers').where('token', token).first()
+    if not reader: return HttpResponse('Reader not configured: '+str(token))
+    game = db.table('game_types').where('id', reader['game_type']).first()
+    if not game: game = {'id':0}
+    account = db.table('accounts').where('id', reader['account']).first()
+    if not account: return HttpResponse('Reader not assigned: '+str(token))
 
-    
     #Looks good. Authenticate them and redirect to input page.
-    request.session['account_id'] = account_id
+    request.session['account_id'] = account['id']
+    request.session['game_id'] = game['id']
+    request.session['reader_id'] = reader['id']
     request.session.set_expiry(360000000)
 
-    return redirect(input, account_id=account_id)
+    return redirect(input, account_id=account['id'])
 
 @csrf_exempt
 def handler(request, account_id):
@@ -224,7 +221,7 @@ def handler(request, account_id):
 
     from foosbot.modules.handler import Handler
 
-    hand = Handler(request, account_id)
+    hand = Handler(account_id)
     response = hand.handle(request)
     # if isinstance(response, ResponseThen):
     #     return response
