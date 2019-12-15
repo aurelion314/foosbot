@@ -36,7 +36,8 @@ class Handler():
     def ping(self, request):
         client_data = []
         for key in request.META:
-            if 'HTTP' in key:
+            #We don't need all meta-data, just some more interesting peices that may be useful in the future.
+            if 'HTTP' in key and key not in ['HTTP_ACCEPT', 'HTTP_CONTENT_LENGTH', 'HTTPS', 'HTTP_CONNECTION', 'HTTP_X_REQUESTED_WITH']:
                 client_data.append({key: request.META[key]})
 
         # print(client_data)
