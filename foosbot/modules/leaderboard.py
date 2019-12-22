@@ -16,9 +16,35 @@ def get_table_leaderboard(data, account_id):
         user['elo'] = int(round(user['elo'])) if user['elo'] else 0
         data.append(user)
         #Limit 20 results
-        if len(data) >= 20: break
+        if len(data) >= 10: break
 
-    return {'status': 'success', 'leaderboard_data':data}
+    #also get matches
+    matches = list(get_match_history(account_id))
+
+    return {'status': 'success', 'leaderboard_data':data, 'match_history':matches}
+
+def get_match_history(account_id):
+    db = database.builder('foosbot')
+    matches = db.table('matches')\
+        .join(db.raw('users u'), 'u.id', '=', 'matches.player1')\
+        .join(db.raw('users u2'), 'u2.id', '=', 'matches.player2')\
+        .select('matches.player1', 'matches.player2', 'matches.winner','matches.points', 'matches.created_at', db.raw('u.fname as player1_name, u2.fname as player2_name'))\
+        .where('matches.account_id', account_id).where('matches.status', 'complete').order_by('matches.created_at', 'desc')\
+        .limit(10).get()
+
+    for match in matches:
+        match['points'] = f"{float(match['points']):2.0f}"
+        match['created_at'] = parser.parse(str(match['created_at'])[:11])
+        match['date'] = match['created_at'].strftime("%b %d")
+        match.pop('created_at')
+        if match['player1'] == match['winner']:
+            match['winner_name'] = match['player1_name']
+            match['loser_name'] = match['player2_name']
+        else:
+            match['winner_name'] = match['player2_name']
+            match['loser_name'] = match['player1_name']
+
+    return matches
 
 def get_leaderboard(account_id):
     db = database.builder('foosbot')
@@ -98,5 +124,4 @@ class PlayerName():
             return self.players[player_id]
 
 if __name__ == "__main__":
-    np = PlayerName()
-    print(np.getName(2))
+    print(get_match_history(1))

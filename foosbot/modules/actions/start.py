@@ -8,7 +8,7 @@ def start(data, account_id, reader_id):
     #New game starting. There should be no in progress games. If there are, set it to failed.
     in_progress_matches = db.table('matches').where('account_id', account_id).where('reader_id', reader_id).where('status', 'in_progress').get()
     for in_progress_match in in_progress_matches:
-        Slack.end_match(in_progress_match)
+        Slack.clear_match(in_progress_match)
         db.table('matches').where('account_id', account_id).where('status', 'in_progress').where('id', in_progress_match['id']).update({'status':'failed', 'updated_at': str(datetime.now())})
 
     match = {

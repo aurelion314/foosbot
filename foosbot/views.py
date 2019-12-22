@@ -12,7 +12,10 @@ import foosbot.database as database
 def input(request, account_id):
     if request.session.get('account_id') != account_id: raise PermissionDenied
     theme = 'dark'
-    # theme = 'light'
+    theme = 'fire'
+    if theme == 'fire':
+        return render(request, 'foosbot/input_fire.html', context={'account_id':account_id})
+
     return render(request, 'foosbot/input.html', context={'account_id':account_id, 'theme':theme})
 
 @xframe_options_exempt

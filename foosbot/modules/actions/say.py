@@ -1,5 +1,5 @@
-import requests, json
 from django.conf import settings as djangoSettings
+import requests, json
 
 
 def say(data, account_id):
@@ -29,9 +29,10 @@ def say(data, account_id):
     if 'audioContent' in r:
         #Save audio to file
         from base64 import b64decode
-        with open(djangoSettings.STATIC_ROOT+f'/audio/{account_id}.mp3','wb') as f:
+        audio_path = f'/audio/{account_id}.mp3'
+        with open(djangoSettings.STATIC_ROOT+audio_path,'wb') as f:
             f.write(b64decode(r['audioContent']))
 
-        return {'status':'success'}
+        return {'status':'success', 'url':audio_path}
     else:
         return {'status':'failed', 'result':str(r)}

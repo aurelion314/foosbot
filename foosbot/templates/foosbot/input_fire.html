@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<!-- 
+<link rel="stylesheet" href="../static/css/vendor/bootstrap.min.css">
+<script src="../static/js/vendor/jquery.min.js"></script>
+<script src="../static/js/vendor/bootstrap.min.js"></script> -->
+
+<style>
+  html,
+  body {
+    height: 100%;
+    width: 100%;
+    color: white;
+  }
+
+  #outside_container {
+    width: 100%;
+    height: 100%;
+    min-width: 700px;
+    min-height: 400px;
+    padding: 0;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #inside_container {
+    /* background-image: url('http://www.kickerkult.de/WebRoot/Store/Shops/61190833/4C7D/07DB/1D65/884A/229E/C0A8/28BB/6162/Master-cup-xxl.jpg'); */
+    background-image: url("/static/img/foos_background.png");
+    background-size: 100% 100%;
+    width: 700px;
+    height: 400px;
+    padding: 0;
+    margin: 0 auto;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+  }
+
+  #table_free_image {
+    height: 70px;
+    width: 400px;
+    top: 0px;
+    position: relative;
+    display: block;
+    margin: auto;
+  }
+
+  #versus_image {
+    height: 70px;
+    width: 70px;
+    top: -12px;
+    position: relative;
+  }
+
+  .versus_text {
+    font-size: 40px;
+    font-weight: 600;
+    font-style: italic;
+  }
+
+  .points_text {
+    font-size: 15px;
+    font-weight: 600;
+    color: rgba(255, 0, 0, 0.548);
+    position: relative;
+    top: 16px;
+  }
+  .points_text.won_points_text {
+    top: 0px;
+  }
+
+  #player1_points {
+    left: 33px;
+  }
+
+  #player2_points {
+    left: -37px;
+  }
+
+  #status_container {
+    height: 80px;
+  }
+
+  #input_container {
+    height: 10px;
+  }
+
+  #info_container {
+    height: 50px;
+  }
+  .timeout_text {
+    font-size: 8px;
+    color:#747474;
+    position: relative;
+    top:-4px;
+  }
+
+  #leaderboard_container {
+    height: 270px;
+  }
+
+  #input {
+    border: 0;
+    outline: none;
+    background-color: transparent;
+    color: transparent;
+  }
+
+  .rank_outside {
+    margin-bottom: 10px;
+    padding: 2px;
+    background-color: rgba(151, 34, 34, 0.4);
+  }
+
+  .rank_inside {
+    background-color: rgba(151, 34, 34, 0.6);
+    font-weight: 600;
+  }
+
+  .rank_rank {
+    position: relative;
+  }
+
+  .rank_image {
+    left: -31px;
+    top: -13px;
+    width: 45px;
+    height: 45px;
+    position: absolute;
+  }
+
+  .rank_name {
+    left: 20px;
+    position: relative;
+  }
+
+  .rank_points {
+    left: 220px;
+    position: absolute;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    font-family: Helvetica, Arial, sans-serif;
+  }
+
+  .leaderboard-results {
+    text-align: left;
+    border-collapse: collapse;
+    text-align: center;
+    /* border-collapse:separate; 
+  border-spacing: 0 2px; */
+    /* background-color:#747474; */
+  }
+
+  .leaderboard-results thead th {
+    padding: 3px 5px;
+    color: #747474;
+    font-size: 11px;
+    font-weight: bold;
+    background-color: #232323;
+    text-align: center;
+  }
+
+  .leaderboard-results tbody td {
+    /* background-color: #1a1a1a; */
+    padding: 2px;
+    font-size: 13px;
+    border-bottom: 2px solid #232323;
+  }
+
+  .leaderboard-results tbody tr:hover td {
+    background: #1d1d1d;
+  }
+
+  .leaderboard-results tbody tr {
+    color: #747474;
+    background-color: #1a1a1a;
+    padding: 15px;
+    margin: 5px;
+  }
+
+  .leaderboard-results tbody {
+    /* padding: 10px 15px; */
+    border-radius: 50%;
+    font: Helvetica, Arial, sans-serif;
+  }
+</style>
+
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id="outside_container">
+    <div id="inside_container">
+      <div id="input_app">
+        <!-- Game Status -->
+        <div id="status_container">
+
+          <!-- Show Current Players -->
+          <div id="table_players" class="row" hidden>
+            <div class="col-sm-1"></div>
+            <div class="col-sm-4 text-center"><span id="player1_points" class="points_text"> [[ match_data.player1_rank
+                ]] </span>
+              <span class="versus_text">[[ match_data.player1_name ]]</span></div>
+            <div class="col-sm-2 center-block">
+              <img id="versus_image" src="/static/img/foos_vs2.png">
+            </div>
+            <div class="col-sm-4 text-center"><span class="versus_text">[[ match_data.player2_name ]]</span><span
+                id="player2_points" class="points_text">[[ match_data.player2_rank ]]</span>
+            </div>
+            <div class="col-sm-1"></div>
+          </div>
+
+          <!-- Show Winner -->
+          <div id="table_winner" class="row" hidden>
+            <div class="row">
+              <div class="col-sm-12 text-center">
+                <span id="win_message" class="versus_text">[[ match_data.winner ]] Won!</span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12 text-center">
+                <span class="points_text won_points_text">+[[ match_data.points_won ]] points!</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Show Table Free -->
+          <div id="table_free" class="row">
+            <div class="col-sm-12 center-block">
+              <img id="table_free_image" src="/static/img/foos_table_free.png">
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Secret Input Area -->
+        <div id="input_container">
+          <div class="row">
+            <div class="col-sm-12 text-center">
+              <form>
+                <input type='text' id='input' autocomplete="off" autofocus>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info Area -->
+        <div id="info_container">
+          <div class="row">
+            <div class="col-sm-12 text-center">[[ message ]]</div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 text-center"><span class="timeout_text">([[ match_data.timeout ]])</span></div>
+          </div>
+        </div>
+
+        <!-- Player Rankings -->
+        <div id="leaderboard_container">
+          <div class="row">
+            <div class="col-sm-1"></div>
+            <div class="col-sm-6">
+              <table id="match_history" class="leaderboard-results" width="100%">
+                <thead>
+                  <tr>
+                    <th>Match Date</th>
+                    <th>Victor</th>
+                    <th>Defeated</th>
+                    <th>Points</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="match in match_history">
+                    <td>
+                      [[ match.date ]]
+                    </td>
+                    <td>
+                      [[ match.winner_name ]]
+                    </td>
+                    <td>
+                      [[ match.loser_name ]]
+                    </td>
+                    <td>
+                      [[ match.points ]]
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="col-sm-4">
+              <table id="rankings" class="leaderboard-results" width="100%">
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Player Name</th>
+                    <th>Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="player in leaderboard_data">
+                    <td>
+                      [[ player.rank ]]
+                    </td>
+                    <td>
+                      [[ player.fname ]]
+                    </td>
+                    <td>
+                      [[ player.elo ]]
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- <template v-for="player in leaderboard_data">
+                <div class="row rank_outside">
+                  <div class="col-sm-12 rank_inside">
+                    <span class="rank_name">[[ player.fname ]]</span>
+                    <span class="rank_points">[[ player.elo ]]</span>
+                  </div>
+                </div>
+              </template> -->
+            </div>
+            <div class="col-sm-1"></div>
+          </div>
+        </div>
+
+
+
+      </div>
+    </div>
+  </div>
+  </div>
+
+
+  <script>
+    $outside = $("#outside_container")
+    $inside = $('#inside_container')
+    $scale_width = $outside.width() / $inside.width()
+    $scale_height = $outside.height() / $inside.height()
+    console.log($outside.width(), $outside.height(), $scale_width, $scale_height)
+    $inside.css({
+      transform: "translate(-50%, -50%) " + "scale(" + $scale_width + ", " + $scale_height + ")"
+    });
+    //For some reason the transform changes the size of $outside, so we have to do it again to actually match. WTF?
+    // $scale_width = $outside.width() / $inside.width()
+    // $scale_height = $outside.height() / $inside.height()
+    // console.log($outside.width(), $outside.height(), $inside.width(), $inside.height(), $scale_width, $scale_height)
+    // $inside.css({
+    //   transform: "translate(-50%, -50%) " + "scale(" + $scale_width + ", " + $scale_height + ")"
+    // });
+
+    account_id = {{ account_id }}
+  </script>
+
+  <script src="../static/js/vendor/vue.js"></script>
+  <script src="../static/js/input_fire.js?version=2" type="text/javascript"></script>
+
+</body>
+
+</html>
