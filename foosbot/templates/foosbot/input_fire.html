@@ -169,7 +169,6 @@
   }
 
   .leaderboard-results tbody td {
-    /* background-color: #1a1a1a; */
     padding: 2px;
     font-size: 13px;
     border-bottom: 2px solid #232323;
@@ -177,6 +176,16 @@
 
   .leaderboard-results tbody tr:hover td {
     background: #1d1d1d;
+  }
+
+  .leaderboard-results tbody tr td.winner_text {
+    color: #5c7c6c;
+  }
+  .leaderboard-results tbody tr td.loser_text {
+    color: #8f5c5c;
+  }
+  .leaderboard-results tbody tr td.emphasize_text {
+    font-weight: bold;
   }
 
   .leaderboard-results tbody tr {
@@ -284,10 +293,10 @@
                     <td>
                       [[ match.date ]]
                     </td>
-                    <td>
+                    <td class="winner_text">
                       [[ match.winner_name ]]
                     </td>
-                    <td>
+                    <td class="loser_text">
                       [[ match.loser_name ]]
                     </td>
                     <td>
@@ -311,7 +320,7 @@
                     <td>
                       [[ player.rank ]]
                     </td>
-                    <td>
+                    <td class="emphasize_text">
                       [[ player.fname ]]
                     </td>
                     <td>
