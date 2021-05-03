@@ -1,62 +1,20 @@
 # foosbot
-track wins and loses with elo based ranking
+This is the codebase for a foosball leaderboard system I created for use at local businesses. Due to covid, this service has not seen growth so I am open sourcing the code. This can be used for any 2 player game.
 
-# Pi Setup
-As described on https://blog.eq8.eu/til/raspberi-pi-as-kiosk-load-browser-on-startup-fullscreen.html
-1. sudo raspi-config
-2. Boot Options -> B1. Descktop / CLI -> B4 Desktop Autologin
-3. ~/kiosk.sh needs stuff. --start-fullscreen
-#!/bin/bash
-xset s noblank
-xset s off
-xset -dpms
+Every player gets a simple keychain fob. Two players taps their fobs at the table to start a game. The winner taps once more at the end. The game is recorded and a chess style ELO is tracked for each player for a statistically accurate leaderboard based on player skill.
 
-unclutter -idle 0.5 -root &
+Features include:
+   -A display near the table, which shows the current top players, recent games, and current game in progress.
+   -Slack integration, which shows if the table is currently in use, and reports the wins/losses, along with win streaks.
+   -Text to Speech audio at table. Declares who is playing and announces the winner along with if they are dominating.
+   -Web based Leaderboard with match history. Can be integrated into an iframe to display on internal website.
+   -Admin portal to add/remove players and assign fobs
+   
 
-sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' /home/pi/.config/chromium/Default/Preferences
-sed -i 's/"exit_type":"Crashed"/"exit_type":"Normal"/' /home/pi/.config/chromium/Default/Preferences
+Hardware:
+   -Raspberry pi and fob reader with power and internet access (required)
+   -Key fobs (required)
+   -Monitor dislay using HDMI (optional)
+   -Speakers (optional)
 
-/usr/bin/chromium-browser --noerrdialogs --disable-infobars --start-fullscreen https://www.employeearcade.com/token?token=test
-
-while true; do
-   sleep 10
-done
-
-4. Make a service sudo nano /lib/systemd/system/kiosk.service
-[Unit]
-Description=Chromium Kiosk
-Wants=graphical.target
-After=graphical.target
-
-[Service]
-Environment=DISPLAY=:0.0
-Environment=XAUTHORITY=/home/pi/.Xauthority
-Type=simple
-ExecStart=/bin/bash /home/pi/kiosk.sh
-Restart=on-abort
-User=pi
-Group=pi
-
-[Install]
-WantedBy=graphical.target
-
-then 
-sudo systemctl enable kiosk.service
-sudo systemctl start kiosk.service
-
-
-
-# Pi SSH
-1. connect pi to local network with ethernet
-2. sudo nmap -sP 192.168.1.0/24 | awk '/^Nmap/{ip=$NF}/B8:27:EB/{print ip}'
-3. ssh pi@<Pi IP>
-4. pass: arcade
-
-# Pi Clone
-1. sudo fdisk -l
-2. (without gzip) sudo ionice -c3 dd bs=4M of=/dev/sdc if=~/pi_template.img
-    2. (with gzip) sudo gzip -dc ~/pi_template.gz | dd bs=4M of=/dev/sdc 
-3. Set the account token (ask Mike how)
-4. If reinstall required, follow https://pimylifeup.com/raspberry-pi-kiosk/
-5. To create a new backup img, use sudo dd bs=4M if=/dev/sdc | gzip > ~/pi_img_em.gz
-    -or instead of gzip, just use of=~/pi.img
+The service is currently live at 2 offices. If you would like to purchase the service for your business, please email me at aurelion314@gmail.com. 
