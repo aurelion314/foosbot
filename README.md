@@ -1,7 +1,7 @@
 # foosbot
 This is the codebase for a foosball leaderboard system I created for use at local businesses. Due to covid, this service has not seen growth so I am open sourcing the code. This can be used for any 2 player game.
 
-Every player gets a simple keychain fob. Two players taps their fobs at the table to start a game. The winner taps once more at the end. The game is recorded and a chess style ELO is tracked for each player for a statistically accurate leaderboard based on player skill.
+Every player gets a simple keychain fob. Two players tap their fobs at the table to start a game. The winner taps once more at the end. The game is recorded and a chess style ELO is tracked for each player for a statistically accurate leaderboard based on player skill.
 
 Features include:
    -A display near the table, which shows the current top players, recent games, and current game in progress.
