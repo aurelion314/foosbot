@@ -52,17 +52,4 @@ TO DO:
         Welcome email when they add a player. Need email column and option to send email or not.
     Teams
     Leaderboard at table (Kiosk)
-    
-Marketing:
-    Question: How can I get clients and make this a real business?
-    1. Get a single first client. Bug Arpan, if he takes too long, try Joseph. Can even do it for free.
-    2. Work with first client to make sure the product is solid.
-    3. Once validated with a first client:
-        -build pi kit and instructions for easy self-setup and to look cool
-        -build marketing site
-        -release to slack marketplace
-        -paid ads, vancouver foos, hire someone to do sales/marketing.
-        -$70/month is worth it. Do 49.99 basic package (25 players, 1 game), 69.99 (100 players, 1 game), $100(250+ players). +$40 per game mode. 
-
-    After a few clients, rebuild it to use AWS lambdas else I will die when pythonanywhere dies.
-    Need to support multiple games (multiple pi setup)
+   
