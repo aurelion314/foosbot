@@ -10,7 +10,6 @@ Every player gets a simple keychain fob. Two players tap their fobs at the table
    - Web based Leaderboard with match history. Can be integrated into an iframe to display on internal website.
    - Admin portal to add/remove players and assign fobs
    
-
 ### Hardware:
    - Raspberry pi and fob reader with power and internet access (required)
    - Key fobs (required)
@@ -19,3 +18,12 @@ Every player gets a simple keychain fob. Two players tap their fobs at the table
 
 
 **The service is currently live at 2 offices. If you would like to purchase the service for your business, please email me at aurelion314@gmail.com**
+
+### Table Kiosk/Display
+![Kiosk](pics/foos_kiosk.jpg)
+
+### Leadboard
+![Leaderboard](pics/foos_leaderboard.png)
+
+### Match History
+![History](pics/foos_details.png)
