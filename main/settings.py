@@ -25,7 +25,7 @@ SECRET_KEY = '1u2v8(!&pytu&d1!=7z_*+ci=oz)9u2=lpzoz^=5w7_pqzvyd^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [u'Aurelion.pythonanywhere.com', u'127.0.0.1', u'192.168.1.6', 'www.employeearcade.com']
+ALLOWED_HOSTS = [u'Aurelion.pythonanywhere.com', u'127.0.0.1', u'192.168.1.6', 'www.employeearcade.com', 'www.ranktag.ca']
 
 
 # Application definition
@@ -87,7 +87,7 @@ DATABASES = {
 
 #Overwrite DATABASES when testing locally
 import os.path as path
-if path.isfile('/home/proth/Documents/code/foosbot/README.md'): 
+if path.isfile('/home/proth/Documents/code/foosbot/README.md'):
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
@@ -143,5 +143,5 @@ STATIC_ROOT = u'/home/Aurelion/foosbot/foosbot/static'
 STATIC_URL = '/static/'
 
 #if testing locally use different static root
-if path.isfile('/home/proth/Documents/code/foosbot/README.md'): 
+if path.isfile('/home/proth/Documents/code/foosbot/README.md'):
     STATIC_ROOT = u'/home/proth/Documents/code/foosbot/foosbot/static'

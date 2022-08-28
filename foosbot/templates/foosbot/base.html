@@ -10,17 +10,9 @@
 <!-- <script src="../static/js/vendor/bootstrap.min.js"></script> -->
 
 <style>
-  /* body {
-    padding-top: 70px;
-  } */
-  @media (max-width: 979px) {
-    body {
-      padding-top: 0px;
-    }
-  }
   #content {
     width: 80%  ;
-    margin: 0 auto;
+    margin: auto;
   }
   .navbar-inverse, .navbar-toggle, .navbar-toggle:hover{
     background-color: #487075;
@@ -32,6 +24,21 @@
   [v-cloak] { 
     display: none 
   }
+  .panel-body{
+    overflow-x: auto;
+  }
+  .container{
+    overflow-x: auto  ;
+  }
+  @media (max-width: 979px) {
+    body {
+      padding-top: 0px;
+    }
+    #content {
+      width: 100%  ;
+      margin: 2rem auto;
+    }
+  }
 
 </style>
 
@@ -40,7 +47,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="shortcut icon" type="image/png" href="/static/img/logo_mini.png"/>
-  <title>EmployeeArcade</title>
+  <title>RankTag</title>
 
 </head>
 
