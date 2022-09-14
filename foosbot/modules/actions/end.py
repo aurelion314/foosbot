@@ -5,13 +5,13 @@ from foosbot.modules.slack import Slack
 MAX_POINTS_GAIN = 40
 
 def end(data, account_id, reader_id):
-    db = database.builder('foosbot')    
+    db = database.builder('foosbot')
 
     #validate
     if 'winner' not in data: return {'status': 'no winner given'}
     winner = data['winner']
     loser = data['player1'] if winner!=data['player1'] else data['player2']
-    
+
     #load the players
     winner = db.table('users').where('id', winner).first()
     loser = db.table('users').where('id', loser).first()
@@ -40,7 +40,7 @@ def end(data, account_id, reader_id):
     elif not loser['elo']:
         loser['elo'] = initialize_elo(loser, winner['elo'], False)
 
-    
+
     #calculate the ELO change
     elo_change = calculate_elo_change(winner['elo'], loser['elo'])
     elo_won, elo_lost = get_real_elo_change(elo_change, account_id)
@@ -60,12 +60,12 @@ def end(data, account_id, reader_id):
     return {'status': 'success', 'streak':streak, 'points':int(round(elo_change))}
 
 def initialize_elo(player, player2_elo, win=True):
-    db = database.builder('foosbot')  
+    db = database.builder('foosbot')
     players = db.table('users').where('account_id', player['account_id']).where_null('deleted_at').where_not_null('elo').get()
-    
+
     #is this the first player?
     if not players or len(players) < 2:
-        return 1500    
+        return 1500
 
     #do some math
     import statistics
@@ -80,7 +80,7 @@ def initialize_elo(player, player2_elo, win=True):
     bonus = bonus*std
 
     return 1500+bonus
-    
+
 
 
 
@@ -98,7 +98,7 @@ def get_points_change(winner, loser, elo_won, elo_lost):
         points_won = elo_won
 
 
-    #Losing. if points is lower, lose less points to normalize. 
+    #Losing. if points is lower, lose less points to normalize.
     if loser['points'] < loser['elo']:
         #Points is too low. don't lose as much
         points_missing = loser['elo'] - loser['points']
@@ -122,19 +122,21 @@ def get_points_change(winner, loser, elo_won, elo_lost):
 #Alter the real change in Elo to keep the average elo near 1500
 def get_real_elo_change(elo_change, account_id):
     if elo_change < 5: return [elo_change, elo_change]
-    db = database.builder('foosbot') 
+    db = database.builder('foosbot')
 
     elo_average = db.table('users').where('account_id', account_id).where_null('deleted_at').select(db.raw('avg(elo) as average_elo')).first()['average_elo']
     print('elo average', elo_average)
+    if not elo_average or not isinstance(elo_average, int):
+        return [elo_change, elo_change]
     if elo_average >1525:
         return [elo_change-1, elo_change+1] #win less, lose more
     if elo_average <1475:
         return [elo_change+1, elo_change-1] #win more, lose less
-    
+
     return [elo_change, elo_change]
 
 def calculate_elo_change(elo1, elo2):
-    max_change = MAX_POINTS_GAIN 
+    max_change = MAX_POINTS_GAIN
     win_probability = calculate_win_probability(elo1, elo2)
     return (max_change*(1-win_probability))
 
