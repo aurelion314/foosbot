@@ -17,7 +17,7 @@ Every player gets a simple keychain fob. Two players tap their fobs at the table
    - Speakers (optional)
 
 
-**The service is currently live at 2 offices. If you would like to purchase the service for your business, please email me at aurelion314@gmail.com**
+**If you would like to make use of the service, feel free to email me at aurelion314@gmail.com**
 
 ### Table Kiosk/Display
 ![Kiosk](pics/foos_kiosk.jpg)
